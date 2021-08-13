@@ -1,0 +1,8 @@
+project_id                           = "my-budget-k8s"
+project_region                       = "us-west1" // GCP region ID you want to run the cluster in
+state_bucket_name                    = "my-budget-k8s-terraform-state"
+state_bucket_region                  = "US" // e.g. US or EU, matching region above
+vpc_name                             = "k8s"
+external_ingress_tcp_ports           = ["80", "443"]
+external_ingress_udp_ports           = []                 // Leave empty to not allow UDP ingress
+external_control_plane_access_ranges = ["12.34.56.78/32"] // Such as your home IP
