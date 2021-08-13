@@ -35,7 +35,7 @@ data "google_iam_policy" "cluster_kms_access" {
 
 resource "google_kms_crypto_key_iam_policy" "cluster" {
   crypto_key_id = google_kms_crypto_key.cluster.id
-  policy_data   = data.google_iam_policy.cluster.policy_data
+  policy_data   = data.google_iam_policy.cluster_kms_access.policy_data
 }
 
 // KMS key ring for encrypting terraform state

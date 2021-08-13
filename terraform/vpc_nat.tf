@@ -1,7 +1,7 @@
 resource "google_compute_router" "vpc_router" {
   name    = "${var.vpc_name}-router"
   region  = var.project_region
-  project = var.vpc_name
+  project = var.project_id
   network = google_compute_network.vpc.id
 
   bgp {
