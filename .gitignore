@@ -31,5 +31,6 @@ override.tf.json
 plan
 tfplan
 
-# Excluse private variable values
+# Excluse private variable values and backend config
 terraform.tfvars
+backend.tf
