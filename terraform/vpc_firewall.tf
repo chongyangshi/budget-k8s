@@ -34,7 +34,7 @@ resource "google_compute_firewall" "allow_from_iap" {
 
   allow {
     protocol = "tcp"
-    ports    = 22
+    ports    = ["22"]
   }
 
   source_ranges = local.gcp_iap_ranges
