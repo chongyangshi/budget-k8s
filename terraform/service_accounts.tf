@@ -7,41 +7,26 @@ resource "google_service_account" "cluster" {
   project      = var.project_id
 }
 
-data "google_iam_policy" "cluster" {
-  binding {
-    role = "roles/logging.logWriter"
-
-    members = [
-      "serviceAccount:${google_service_account.cluster.email}",
-    ]
-  }
-
-  binding {
-    role = "roles/monitoring.metricWriter"
-
-    members = [
-      "serviceAccount:${google_service_account.cluster.email}",
-    ]
-  }
-
-  binding {
-    role = "roles/monitoring.viewer"
-
-    members = [
-      "serviceAccount:${google_service_account.cluster.email}",
-    ]
-  }
-
-  binding {
-    role = "roles/stackdriver.resourceMetadata.writer"
-
-    members = [
-      "serviceAccount:${google_service_account.cluster.email}",
-    ]
-  }
+resource "google_project_iam_member" "cluster_log_writer" {
+  project = var.project_id
+  role    = "roles/logging.logWriter"
+  member  = "serviceAccount:${google_service_account.cluster.email}"
 }
 
-resource "google_service_account_iam_policy" "cluster" {
-  service_account_id = google_service_account.cluster.name
-  policy_data        = data.google_iam_policy.cluster.policy_data
+resource "google_project_iam_member" "cluster_metric_writer" {
+  project = var.project_id
+  role    = "roles/monitoring.metricWriter"
+  member  = "serviceAccount:${google_service_account.cluster.email}"
+}
+
+resource "google_project_iam_member" "cluster_monitoring_viewer" {
+  project = var.project_id
+  role    = "roles/monitoring.viewer"
+  member  = "serviceAccount:${google_service_account.cluster.email}"
+}
+
+resource "google_project_iam_member" "cluster_resource_metadata_viewer" {
+  project = var.project_id
+  role    = "roles/stackdriver.resourceMetadata.writer"
+  member  = "serviceAccount:${google_service_account.cluster.email}"
 }

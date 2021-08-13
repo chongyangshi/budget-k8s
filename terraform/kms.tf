@@ -28,7 +28,7 @@ data "google_iam_policy" "cluster_kms_access" {
     role = "roles/cloudkms.cryptoOperator"
 
     members = [
-      google_service_account.cluster.email
+      "serviceAccount:${google_service_account.cluster.email}"
     ]
   }
 }
