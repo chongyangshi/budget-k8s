@@ -23,7 +23,7 @@ resource "google_kms_crypto_key" "cluster" {
   }
 }
 
-data "google_iam_policy" "cluster" {
+data "google_iam_policy" "cluster_kms_access" {
   binding {
     role = "roles/cloudkms.cryptoOperator"
 
