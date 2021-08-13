@@ -4,7 +4,13 @@ This project provides a template for creating a reasonably-secured GCP managed K
 
 ## Bootstrap
 
-Run `gcloud auth login` and `gcloud auth application-default login` to configure your local command line credentials if you've not yet done it for your project.
+Run `gcloud auth login` and `gcloud auth application-default login` to configure your local command line credentials if you've not yet done it for your project. You will also need to have enabled the following APIs for the project, which might take a few minutes:
+
+```bash
+gcloud services enable compute.googleapis.com
+gcloud services enable container.googleapis.com
+gcloud services enable cloudkms.googleapis.com
+```
 
 This project uses Terraform v1.0+, which is now generally available at the time of writing. It may still work with earlier versions of Terraform.
 
