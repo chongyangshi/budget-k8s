@@ -12,7 +12,7 @@ data "google_iam_policy" "cluster" {
     role = "roles/logging.logWriter"
 
     members = [
-      "serviceAccount:${var.google_service_account.cluster.email}",
+      "serviceAccount:${google_service_account.cluster.email}",
     ]
   }
 
@@ -20,7 +20,7 @@ data "google_iam_policy" "cluster" {
     role = "roles/monitoring.metricWriter"
 
     members = [
-      "serviceAccount:${var.google_service_account.cluster.email}",
+      "serviceAccount:${google_service_account.cluster.email}",
     ]
   }
 
@@ -28,7 +28,7 @@ data "google_iam_policy" "cluster" {
     role = "roles/monitoring.viewer"
 
     members = [
-      "serviceAccount:${var.google_service_account.cluster.email}",
+      "serviceAccount:${google_service_account.cluster.email}",
     ]
   }
 
@@ -36,7 +36,7 @@ data "google_iam_policy" "cluster" {
     role = "roles/stackdriver.resourceMetadata.writer"
 
     members = [
-      "serviceAccount:${var.google_service_account.cluster.email}",
+      "serviceAccount:${google_service_account.cluster.email}",
     ]
   }
 }
