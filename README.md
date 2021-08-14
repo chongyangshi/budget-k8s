@@ -22,7 +22,7 @@ gsutil versioning set on gs://my-project-id-terraform-state
 ```
 
 
-Because we should not rely on Terraform state for storing any secrets, customer-managed key encryption will not yet be configured for this bucket. Instead the Google-managed transparent encryption key is used. You can Terraform an appropriate KMS key ring and customer-managed crypto key, and add this with `gsutil kms` later if desired.
+Because we should not rely on Terraform state for storing any sensitive secrets, customer-managed key encryption will not yet be configured for this bucket. Instead the Google-managed transparent encryption key is used. You can Terraform an appropriate KMS key ring and customer-managed crypto key, and add this with `gsutil kms` later if desired.
 
 Once the storage bucket is bootstrapped, configure your project settings. Use `terraform.tfvars.example` under `terraform/` as an example, renaming it `terraform.tfvars` which will not be committed to this repo. You will also need the name of the state storage bucket you just chose for `state_bucket_name`.
 

@@ -1,6 +1,6 @@
 terraform {
   backend "gcs" {
     bucket = "my-budget-k8s-terraform-state"
-    prefix = "state"
+    prefix = "cluster"
   }
 }

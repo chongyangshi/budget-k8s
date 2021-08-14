@@ -1,0 +1,1 @@
+../ingress.auto.tfvars

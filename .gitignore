@@ -32,5 +32,5 @@ plan
 tfplan
 
 # Excluse private variable values and backend config
-terraform.tfvars
+terraform.auto.tfvars
 backend.tf

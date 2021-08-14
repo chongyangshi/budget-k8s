@@ -79,7 +79,7 @@ resource "google_container_cluster" "cluster" {
   }
 
   release_channel {
-    channel = "STABLE"
+    channel = "REGULAR"
   }
 
   network_policy {
@@ -221,3 +221,7 @@ resource "google_container_node_pool" "preemptible_nodes_second_pool" {
   }
 }
 
+output "gke_cluster_endpoint" {
+  type  = "string"
+  value = google_container_cluster.cluster.endpoint
+}
