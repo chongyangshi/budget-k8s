@@ -22,8 +22,14 @@ variable "state_bucket_region" {
 
 variable "vpc_name" {
   type        = string
-  description = "Name of the VPC to be created."
+  description = "Name of the VPC to be created"
   default     = "budget-k8s"
+}
+
+variable "cluster_zone" {
+  type        = string
+  description = "Zone within the region in which the zonal GCP cluster and nodes will be created"
+  default     = "a"
 }
 
 variable "external_ingress_tcp_ports" {
@@ -42,4 +48,34 @@ variable "external_control_plane_access_ranges" {
   type        = list(string)
   description = "List of external IP address ranges allowed to access the GKE Kubernetes control plane"
   default     = []
+}
+
+variable "node_pools_first_instance_type" {
+  type        = string
+  description = "GCE instance type used for the first preemptible node pool"
+  default     = "n2d-standard-2"
+}
+
+variable "node_pools_first_instance_count" {
+  type        = number
+  description = "Number of desired GCE instances provisioned for the first preemptible node pool"
+  default     = 2
+}
+
+variable "node_pools_second_instance_type" {
+  type        = string
+  description = "GCE instance type used for the second preemptible node pool"
+  default     = "n2d-standard-4"
+}
+
+variable "node_pools_second_instance_count" {
+  type        = number
+  description = "Number of desired GCE instances provisioned for the second preemptible node pool"
+  default     = 1
+}
+
+variable "node_ephemeral_disk_size_gb" {
+  type        = number
+  description = "Number of GiBs in size the ephemeral disks of the node should run with"
+  default     = 50
 }
