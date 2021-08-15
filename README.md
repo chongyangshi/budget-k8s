@@ -30,7 +30,7 @@ gcloud services enable container.googleapis.com
 gcloud services enable cloudkms.googleapis.com
 ```
 
-3. Due to the classic chicken-and-egg problem in Terraform, you then need to create a Terraform state bucket in Google Cloud Storage manually, and set up versioning for it (in case of a screw up later), before you can apply any Terraform configurations:
+3. Due to the classic chicken-and-egg problem in Terraform, you then need to create a Terraform state bucket in Google Cloud Storage manually, and set up versioning for it (in case of a screw-up later), before you can apply any Terraform configurations:
 
 ```bash
 gsutil mb -l EU -c STANDARD -b on gs://my-project-id-terraform-state
@@ -59,7 +59,7 @@ This project uses two different providers:
 * `hashicorp/google` (and associated `hashicorp/google-beta`) for GCP resources
 * `hashicorp/kubernetes` for in-cluster configurations of the ingress Traefik Proxy and associated GCP resources
 
-Becaus the `kubernetes` provider cannot be configured properly until the `google` provider has created the actual GKE Kubernetes cluster -- a dependency between the two providers -- it is somewhat necessary for the template to be split in two layers so that they could be bootstrapped cleanly.
+Becaus until the `google` provider has created the actual GKE Kubernetes cluster, the `kubernetes` provider cannot be configured fully -- a dependency between the two providers -- it is somewhat necessary for the template to be split in two layers so that they could be bootstrapped cleanly.
 
 Therefore, you should execute the standard Terraform apply process below in the following order:
 
@@ -80,7 +80,7 @@ terraform apply
 
 Traefik implements its Kubernetes TLS secret controller with Reflection, as a result it requires the ability to list all secrets in all namespaces it watches for new ingress resources in by default, and [stubbornly refuses](https://github.com/traefik/traefik/issues/7097) to provide a config option to turn off the code rquiring secret access, even if the user does not want to load any TLS certificates.
 
-We therefore have had to set up a namespace dedicated to services exposed via Traefik, which is the only namespace Traefik is configured to be able to read all secrets in. This namespace is **`ingress`**. You should only run the services directly terminating ingress traffic in this namespace. The manifests for such a service looks like the following:
+We therefore have had to set up a namespace dedicated to services that will be exposed via Traefik, and make that namespace is the only one in which Traefik is configured to be able to read all secrets. This namespace is called **`ingress`** and is configured by the `ingress` layer. You should only run services which directly terminate ingress traffic in this namespace. The manifests for such a service looks like the following:
 
 ```yaml
 apiVersion: apps/v1
@@ -144,9 +144,11 @@ spec:
 
 In the above example:
 
-* We have an ingress-terminating Deployment called `nginx-test` set up with 2 replicas in the `ingress` namespace, which serves plain-text traffic on TCP 80;
+* We have an ingress-terminating Deployment called `nginx-test` set up with 2 replicas in the `ingress` namespace, which serves plaintext traffic on TCP 80;
 * A corresponding `nginx-test` Service resource, which tells Kubernetes to forward terminating traffic to the Deployment's replicas;
-* A corresponding `nginx-test` Ingress resource, which tells Traefik Proxy (running on the ingress load-balancing GCE instance) to set up TLS termination for our hostname `your-domain.example.com`, and then send traffic for that domain to be terminated by the `nginx-test` Service in plain-text.
+* A corresponding `nginx-test` Ingress resource, which tells Traefik Proxy (running on the ingress load-balancing GCE instance) to set up TLS termination for our hostname `your-domain.example.com`, and then send traffic for that domain to be terminated by the `nginx-test` Service in plaintext.
+
+By default traffic between Kubernetes namespaces are not restricted, so `nginx-test` could for example then reverse proxy traffic it receives to a Java backend application running in the `default` namespace. It is recommended however that you set up [ingress network policies](https://kubernetes.io/docs/concepts/services-networking/network-policies/) to allow only the terminating replicas like `nginx-test` to reach those backend applications.
 
 ## Estimated cost of upkeep
 
@@ -154,4 +156,6 @@ WIP
 
 ## Disclaimer
 
-This template is made available through the MIT License, with full terms available in `LICENSE` of this repository. Cost estimations are based on the author's best-effort understanding of the GCP pricing system at the time of writing. GCP may also choose to change any part of their pricing system at any time. The author is not liable for any discrepancies between the estimations and actual bills when using this template, however caused.
+This template is made available under the MIT License, full terms of which can be found in the `LICENSE` file within this repository. 
+
+Cost estimations are based on the author's best-effort understanding of the GCP pricing system at the time of writing. GCP may also choose to change any part of their pricing system at any time. The author is not liable for any discrepancies between the estimations and actual bills when using this template, however caused.
