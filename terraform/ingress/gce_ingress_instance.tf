@@ -26,7 +26,19 @@ resource "google_compute_address" "ingress_instance_ip" {
   network_tier = "STANDARD"
 }
 
-resource "google_compute_instance" "default" {
+data "google_compute_subnetwork" "ingress" {
+  name    = "ingress"
+  project = var.project_id
+  region  = var.project_region
+}
+
+data "google_container_cluster" "cluster" {
+  name     = "${var.vpc_name}-cluster"
+  location = format("%s-%s", var.project_region, var.cluster_zone)
+  project  = var.project_id
+}
+
+resource "google_compute_instance" "ingress" {
   name         = "ingress"
   machine_type = var.ingress_instance_type
   zone         = format("%s-%s", var.project_region, var.cluster_zone)
@@ -50,8 +62,7 @@ resource "google_compute_instance" "default" {
   }
 
   network_interface {
-    network    = var.vpc_name
-    subnetwork = "ingress"
+    subnetwork = data.google_compute_subnetwork.ingress.self_link
 
     access_config {
       nat_ip       = google_compute_address.ingress_instance_ip.address
@@ -64,6 +75,7 @@ resource "google_compute_instance" "default" {
     traefik_version      = var.ingress_traefik_version,
     traefik_config_file  = local.traefik_config_file,
     traefik_service_file = local.traefik_service_file,
+    gke_control_plane_ca = base64decode(data.google_container_cluster.cluster.master_auth.0.cluster_ca_certificate),
   })
 
   service_account {
@@ -81,7 +93,10 @@ resource "google_compute_instance" "default" {
     automatic_restart   = true
   }
 
-  deletion_protection = true
+  // This instance is mortal (the IP is not) and can be 
+  // deleted and recreated at any time, at a cost of a short
+  // period of ingress being unavailable.
+  deletion_protection = false
 
   depends_on = [
     google_kms_crypto_key_iam_policy.ingress

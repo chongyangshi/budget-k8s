@@ -32,6 +32,7 @@ sudo chown -R traefik:traefik /etc/traefik/acme
 sudo chown -R traefik:traefik /etc/traefik/logs
 sudo touch /etc/traefik/acme/acme.json
 sudo chown traefik:traefik /etc/traefik/acme/acme.json
+sudo chmod 600 /etc/traefik/acme/acme.json
 
 # Sets up traefik's config file
 sudo cat > /etc/traefik/traefik.yaml <<EOF
@@ -39,6 +40,14 @@ ${traefik_config_file}
 EOF
 sudo chown root:root /etc/traefik/traefik.yaml
 sudo chmod 644 /etc/traefik/traefik.yaml
+
+# Loads the cluster's CA certificate into the ingress instance's truststore
+sudo cat > /etc/ssl/certs/k8s.crt <<EOF
+${gke_control_plane_ca}
+EOF
+sudo chown root:root /etc/ssl/certs/k8s.crt
+sudo chmod 644 /etc/ssl/certs/k8s.crt
+sudo update-ca-certificates
 
 # Sets up traefik's log files
 sudo touch /etc/traefik/logs/traefik.log
