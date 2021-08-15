@@ -32,6 +32,9 @@ data "google_iam_policy" "cluster_kms_access" {
       // The container engine robot must be allowed access to the secret as well 
       // for etcd database encryptions
       "serviceAccount:service-${data.google_project.project.number}@container-engine-robot.iam.gserviceaccount.com",
+      // Disk encryption for node groups are operated with the compute engine
+      // service account
+      "serviceAccount:service-${data.google_project.project.number}@compute-system.iam.gserviceaccount.com",
     ]
   }
 }
