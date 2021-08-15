@@ -1,0 +1,31 @@
+[Unit]
+Description=Traefik
+Documentation=https://doc.traefik.io/traefik/
+After=network-online.target
+AssertFileIsExecutable=/usr/local/bin/traefik
+AssertPathExists=/etc/traefik/traefik.yaml
+
+[Service]
+User=traefik
+Group=traefik
+
+CapabilityBoundingSet=CAP_NET_BIND_SERVICE
+AmbientCapabilities=CAP_NET_BIND_SERVICE
+NoNewPrivileges=true
+
+# configure service behavior
+ExecStart=/usr/local/bin/traefik --configfile=/etc/traefik/traefik.yaml
+Type=notify
+Restart=always
+WatchdogSec=1s
+
+LimitNOFILE=1048576
+PrivateTmp=true
+PrivateDevices=false
+ProtectHome=true
+ProtectSystem=full
+
+ReadWriteDirectories=/etc/traefik/acme /etc/traefik/logs
+
+[Install]
+WantedBy=multi-user.target

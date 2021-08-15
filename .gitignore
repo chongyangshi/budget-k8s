@@ -32,6 +32,5 @@ plan
 tfplan
 
 # Exclude the author's custom variable values and backend config
-cluster-custom.auto.tfvars
-ingress-custom.auto.tfvars
+override-base.auto.tfvars
 backend.tf

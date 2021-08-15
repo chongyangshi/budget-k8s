@@ -13,10 +13,6 @@ resource "kubernetes_namespace" "ingress" {
 
     name = "ingress"
   }
-
-  depends_on = [
-    google_container_cluster.cluster
-  ]
 }
 
 resource "kubernetes_service_account" "traefik" {
@@ -24,10 +20,6 @@ resource "kubernetes_service_account" "traefik" {
     name      = "traefik"
     namespace = kubernetes_namespace.ingress.metadata.0.name
   }
-
-  depends_on = [
-    google_container_cluster.cluster
-  ]
 }
 
 // This exported service account token secret WILL appear in Terraform
@@ -52,7 +44,7 @@ resource "kubernetes_cluster_role" "traefik" {
     resources  = ["services", "endpoints"]
     verbs      = ["get", "list", "watch"]
   }
-  
+
   // Read access to ingresses in the new API class
   rule {
     api_groups = ["networking.k8s.io"]
@@ -101,7 +93,7 @@ resource "kubernetes_cluster_role_binding" "traefik" {
 
 resource "kubernetes_role" "traefik" {
   metadata {
-    name = "traefik-ingress-secret-access"
+    name      = "traefik-ingress-secret-access"
     namespace = kubernetes_namespace.ingress.metadata.0.name
   }
 
@@ -115,7 +107,7 @@ resource "kubernetes_role" "traefik" {
 
 resource "kubernetes_role_binding" "traefik" {
   metadata {
-    name = "traefik-ingress-secret-access"
+    name      = "traefik-ingress-secret-access"
     namespace = kubernetes_namespace.ingress.metadata.0.name
   }
   role_ref {

@@ -11,3 +11,4 @@ node_pools_first_instance_type       = "n2-standard-2"
 node_pools_first_instance_count      = 2
 node_pools_second_instance_type      = "n2-standard-4"
 node_pools_second_instance_count     = 1
+ingress_acme_account_email           = "you@example.com"

@@ -79,3 +79,34 @@ variable "node_ephemeral_disk_size_gb" {
   description = "Number of GiBs in size the ephemeral disks of the node should run with"
   default     = 50
 }
+
+variable "ingress_ephemeral_disk_size_gb" {
+  type        = number
+  description = "Number of GiBs in size the ephemeral disks of the ingress load-balancing instance should run with"
+  default     = 10
+}
+
+variable "ingress_instance_type" {
+  type        = string
+  description = "GCE instance type for the permanent ingress load-balancing instance with a public IP"
+  default     = "e2-micro"
+}
+
+variable "ingress_image_type" {
+  type        = string
+  description = "GCE image type for the permanent ingress load-balancing instance with a public IP"
+  default     = "debian-cloud/debian-10"
+}
+
+variable "ingress_acme_account_email" {
+  type        = string
+  description = "The Let's Encrypt account email address used for issuing TLS certificates for your ingress hosts by DNS name"
+  default     = "you@example.com"
+}
+
+variable "ingress_traefik_version" {
+  type        = string
+  description = "The version ID (e.g. v2.4.13) of Traefik ingress proxy to be installed in the ingress load-balancing instance"
+  default     = "v2.4.13"
+
+}
