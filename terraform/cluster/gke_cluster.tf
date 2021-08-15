@@ -150,9 +150,15 @@ resource "google_container_node_pool" "preemptible_nodes_first_pool" {
     boot_disk_kms_key = google_kms_crypto_key.cluster.id
     service_account   = google_service_account.cluster.email
 
-    sandbox_config {
-      sandbox_type = "gvisor"
-    }
+    // We do not use gVisor with sandbox_config, as it will turn off
+    // hyper-threading (HT) and thus cutting our usable CPU resource 
+    // in half. This measure mitigates cross-VM attacks due to hardware 
+    // HT vulnerabilities but the cost to mitigate this risk isn't
+    // justifiable for personal projects. To turn it on anyway, use:
+    //
+    // sandbox_config {
+    //   sandbox_type = "gvisor"  
+    // }
 
     shielded_instance_config {
       enable_secure_boot          = true
@@ -200,9 +206,15 @@ resource "google_container_node_pool" "preemptible_nodes_second_pool" {
     boot_disk_kms_key = google_kms_crypto_key.cluster.id
     service_account   = google_service_account.cluster.email
 
-    sandbox_config {
-      sandbox_type = "gvisor"
-    }
+    // We do not use gVisor with sandbox_config, as it will turn off
+    // hyper-threading (HT) and thus cutting our usable CPU resource 
+    // in half. This measure mitigates cross-VM attacks due to hardware 
+    // HT vulnerabilities but the cost to mitigate this risk isn't
+    // justifiable for personal projects. To turn it on anyway, use:
+    //
+    // sandbox_config {
+    //   sandbox_type = "gvisor"  
+    // }
 
     shielded_instance_config {
       enable_secure_boot          = true
