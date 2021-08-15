@@ -2,12 +2,12 @@ locals {
   master_ip_range = "172.16.0.0/28"
 }
 
-# We run the GKE cluster and all its nodes in a fixed zone within the project
-# region, which allows us to benefit from the waiving of the monthly cluster
-# management fee for the first zonal cluster in the billing account, as well
-# as avoidance of the traffic cost for cross-availability-zone traffic. This
-# is at the cost of resiliency as our cluster will be offline entirely if
-# the specific availability zone goes down in a rare event.
+// We run the GKE cluster and all its nodes in a fixed zone within the project
+// region, which allows us to benefit from the waiving of the monthly cluster
+// management fee for the first zonal cluster in the billing account, as well
+// as avoidance of the traffic cost for cross-availability-zone traffic. This
+// is at the cost of resiliency as our cluster will be offline entirely if
+// the specific availability zone goes down in a rare event.
 resource "google_container_cluster" "cluster" {
   name = "${var.vpc_name}-cluster"
 
@@ -111,16 +111,16 @@ resource "google_container_cluster" "cluster" {
 
   enable_shielded_nodes = true
 
-  # Per Terraform documentation:
-  # We can't create a cluster with no node pool defined, but we want to only use
-  # separately managed node pools. So we create the smallest possible default
-  # node pool and immediately delete it.
+  // Per Terraform documentation:
+  // We can't create a cluster with no node pool defined, but we want to only use
+  // separately managed node pools. So we create the smallest possible default
+  // node pool and immediately delete it.
   remove_default_node_pool = true
   initial_node_count       = 1
 }
 
-# We run two preemptible node pools to provide a small amount of resistance to 
-# preemptions and simutaneous terminations.
+// We run two preemptible node pools to provide a small amount of resistance to 
+// preemptions and simutaneous terminations.
 resource "google_container_node_pool" "preemptible_nodes_first_pool" {
   name = "${var.vpc_name}-cluster-preemptible-1"
 

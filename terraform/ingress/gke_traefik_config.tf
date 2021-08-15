@@ -1,10 +1,10 @@
-# Because Traefik implements its Kubernetes API client with reflect, it
-# requires the ability to list all secrets in specific namespaces it
-# watches for new ingress resources in, and stubbornly refuses to provide
-# a config to turn secret access off if the user does not want to load any
-# TLS certificates: https://github.com/traefik/traefik/issues/7097; we
-# have to set up a namespace dedicated to ingress services in the cluster
-# for traefik to access secrets in, which is best practice in any case.
+// Because Traefik implements its Kubernetes API client with reflect, it
+// requires the ability to list all secrets in specific namespaces it
+// watches for new ingress resources in, and stubbornly refuses to provide
+// a config to turn secret access off if the user does not want to load any
+// TLS certificates: https://github.com/traefik/traefik/issues/7097; we
+// have to set up a namespace dedicated to ingress services in the cluster
+// for traefik to access secrets in, which is best practice in any case.
 resource "kubernetes_namespace" "ingress" {
   metadata {
     labels = {
