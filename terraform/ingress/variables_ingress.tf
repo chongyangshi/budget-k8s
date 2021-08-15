@@ -5,6 +5,7 @@
 variable "cluster_endpoint" {
   type        = string
   description = "The endpoint including https:// schema of the GKE cluster created in the 'cluster' module"
+  default     = "172.16.0.2" // It should be this by default in the 172.16.0.0/28 range
 }
 
 variable "cluster_ca_cert" {
