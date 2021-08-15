@@ -29,7 +29,8 @@ resource "kubernetes_service_account" "traefik" {
 // to end up in Terraform remote state.
 data "kubernetes_secret" "traefik_service_token" {
   metadata {
-    name = kubernetes_service_account.traefik.default_secret_name
+    name      = kubernetes_service_account.traefik.default_secret_name
+    namespace = kubernetes_service_account.traefik.metadata.0.namespace
   }
 }
 
