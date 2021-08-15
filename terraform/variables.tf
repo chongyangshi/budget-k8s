@@ -9,17 +9,6 @@ variable "project_region" {
   default     = "europe-west2"
 }
 
-variable "state_bucket_name" {
-  type        = string
-  description = "Name of the Cloud Storage bucket storing terraform state"
-}
-
-variable "state_bucket_region" {
-  type        = string
-  description = "Region of the Cloud Storage bucket storing terraform state, for example US or EU"
-  default     = "EU"
-}
-
 variable "vpc_name" {
   type        = string
   description = "Name of the VPC to be created"
@@ -80,6 +69,12 @@ variable "node_ephemeral_disk_size_gb" {
   default     = 50
 }
 
+variable "container_registry_region" {
+  type        = string
+  description = "Region of the Container Registry bucket storing your custom images, for example US or EU"
+  default     = "EU"
+}
+
 variable "ingress_ephemeral_disk_size_gb" {
   type        = number
   description = "Number of GiBs in size the ephemeral disks of the ingress load-balancing instance should run with"
@@ -108,5 +103,4 @@ variable "ingress_traefik_version" {
   type        = string
   description = "The version ID (e.g. v2.4.13) of Traefik ingress proxy to be installed in the ingress load-balancing instance"
   default     = "v2.4.13"
-
 }
