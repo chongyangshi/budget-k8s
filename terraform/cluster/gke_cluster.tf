@@ -222,6 +222,9 @@ resource "google_container_node_pool" "preemptible_nodes_second_pool" {
 }
 
 output "gke_cluster_endpoint" {
-  type  = "string"
   value = google_container_cluster.cluster.endpoint
+}
+
+output "gke_cluster_ca_cert" {
+  value = google_container_cluster.cluster.master_auth.0.cluster_ca_certificate
 }
