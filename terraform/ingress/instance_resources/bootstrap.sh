@@ -34,17 +34,17 @@ sudo touch /etc/traefik/acme/acme.json
 sudo chown traefik:traefik /etc/traefik/acme/acme.json
 sudo chmod 600 /etc/traefik/acme/acme.json
 
-# Sets up traefik's config file
-sudo cat > /etc/traefik/traefik.yaml <<EOF
-${traefik_config_file}
-EOF
+# Sets up traefik's config and middleware files
+sudo echo "${traefik_config_file}" | base64 --decode > /etc/traefik/traefik.yaml
 sudo chown root:root /etc/traefik/traefik.yaml
 sudo chmod 644 /etc/traefik/traefik.yaml
 
+sudo echo "${traefik_middlewares_file}" | base64 --decode > /etc/traefik/middlewares.yaml
+sudo chown root:root /etc/traefik/middlewares.yaml
+sudo chmod 644 /etc/traefik/middlewares.yaml
+
 # Loads the cluster's CA certificate into the ingress instance's truststore
-sudo cat > /etc/ssl/certs/k8s.crt <<EOF
-${gke_control_plane_ca}
-EOF
+sudo echo "${gke_control_plane_ca}" | base64 --decode > /etc/ssl/certs/k8s.crt
 sudo chown root:root /etc/ssl/certs/k8s.crt
 sudo chmod 644 /etc/ssl/certs/k8s.crt
 sudo update-ca-certificates
@@ -60,9 +60,7 @@ sudo chmod 644 /etc/traefik/logs/access.log
 sudo ln -s /etc/traefik/logs/access.log /var/log/access.log
 
 # Sets up Traefik's systemd service config and starts it
-sudo cat > /etc/systemd/system/traefik.service <<EOF
-${traefik_service_file}
-EOF
+sudo echo "${traefik_service_file}" | base64 --decode > /etc/systemd/system/traefik.service
 sudo chown root:root /etc/systemd/system/traefik.service
 sudo chmod 644 /etc/systemd/system/traefik.service
 sudo systemctl daemon-reload

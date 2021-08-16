@@ -44,3 +44,6 @@ providers:
     certAuthFilePath: "/etc/ssl/certs/k8s.crt"
     ingressClass: traefik
     namespaces: ["ingress"]
+  file:
+    # File containing middleware configurations
+    filename: "/etc/traefik/middlewares.yaml"

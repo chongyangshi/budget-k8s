@@ -33,4 +33,5 @@ tfplan
 
 # Exclude the author's custom variable values and backend config
 override-base.auto.tfvars
+middlewares_override.yaml
 backend.tf

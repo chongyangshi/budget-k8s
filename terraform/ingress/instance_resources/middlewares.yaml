@@ -1,0 +1,13 @@
+http:
+  middlewares:
+    testProxyProtocolHeader:
+      # Middleware setting proxy protocol headers
+      headers:
+        hostsProxyHeaders: true
+    
+    testBasicAuth:
+      # Middleware setting basic HTTP auth with credentials test/123456 (Bcrypt)
+      basicAuth:
+        users:
+        - "test:$2a$12$7fwZOLGalzcm8kBVU3B90OsLhQ7lV83V5W139ccaU3rHC9mcbp.4u"
+    

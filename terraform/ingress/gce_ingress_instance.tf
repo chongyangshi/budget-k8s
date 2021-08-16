@@ -5,12 +5,14 @@
 // as we will not be able to attach a fixed static IP for DNS.
 
 locals {
-  traefik_config_file = templatefile("${path.module}/instance_resources/traefik.yaml", {
+  traefik_config_file = base64encode(templatefile("${path.module}/instance_resources/traefik.yaml", {
     acme_account_email    = var.ingress_acme_account_email,
     traefik_service_token = data.kubernetes_secret.traefik_service_token.data.token,
-  })
+  }))
 
-  traefik_service_file = file("${path.module}/instance_resources/traefik.service")
+  traefik_service_file = filebase64("${path.module}/instance_resources/traefik.service")
+
+  traefik_middlewares_file = fileexists("${path.module}/instance_resources/middlewares_override.yaml") ? filebase64("${path.module}/instance_resources/middlewares_override.yaml") : filebase64("${path.module}/instance_resources/middlewares.yaml")
 }
 
 // Static IP address attached to the ingress load-balancing instance
@@ -72,10 +74,11 @@ resource "google_compute_instance" "ingress" {
 
 
   metadata_startup_script = templatefile("${path.module}/instance_resources/bootstrap.sh", {
-    traefik_version      = var.ingress_traefik_version,
-    traefik_config_file  = local.traefik_config_file,
-    traefik_service_file = local.traefik_service_file,
-    gke_control_plane_ca = base64decode(data.google_container_cluster.cluster.master_auth.0.cluster_ca_certificate),
+    traefik_version          = var.ingress_traefik_version,
+    traefik_config_file      = local.traefik_config_file,
+    traefik_service_file     = local.traefik_service_file,
+    traefik_middlewares_file = local.traefik_middlewares_file,
+    gke_control_plane_ca     = data.google_container_cluster.cluster.master_auth.0.cluster_ca_certificate,
   })
 
   service_account {
