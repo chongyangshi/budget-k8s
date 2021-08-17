@@ -22,7 +22,14 @@ resource "kubernetes_ingress" "nginx_example" {
   }
 
   spec {
+    backend {
+      service_name = "nginx-example"
+      service_port = 80
+    }
+
     rule {
+      host = "test.example.com"
+
       http {
         path {
           backend {
