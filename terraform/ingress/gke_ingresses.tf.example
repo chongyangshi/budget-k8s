@@ -1,0 +1,115 @@
+// This file stores ingress specifications for Traefik to forward to// This file stores ingress specifications for Traefik to forward to
+
+resource "kubernetes_ingress" "nginx_example" {
+  metadata {
+    name      = "nginx-example"
+    namespace = "ingress"
+
+    annotations = {
+      // This is a fixed ingress class for all services to be fronted by Traefik 
+      "kubernetes.io/ingress.class" = "traefik"
+      
+      // Uses the testBasicAuth HTTP basic auth middleware configured under 
+      // instance_resources/middlewares.yaml
+      "traefik.ingress.kubernetes.io/router.middlewares" = "testBasicAuth@file"
+
+      // Configures ACME and automatic TLS
+      "traefik.ingress.kubernetes.io/router.entrypoints" = "websecure"
+      "traefik.ingress.kubernetes.io/router.tls" = "true"
+      "traefik.ingress.kubernetes.io/router.tls.certresolver" = "default"
+      "traefik.ingress.kubernetes.io/router.tls.domains.0.main" = "test.example.com"
+    }
+  }
+
+  spec {
+    rule {
+      http {
+        path {
+          backend {
+            service_name = "nginx-example"
+            service_port = 80
+          }
+
+          path = "/"
+        }
+    }
+
+    // No TLS block, as Traefik will terminate TLS using the default certresolver
+    // for the domain specified in the "traefik.ingress.kubernetes.io/router.tls.
+    // domains.0.main" annotation to generate a Let's Encrypt ACME certficate.
+  }
+}
+
+
+// Example deployment in the ingress namespace receiving forwarded
+// traffic from Traefik. You may wish to use Helm instead of the
+// Kubernetes provider, or a GitOps system like ArgoCD for deploying
+// actual applications instead.
+resource "kubernetes_deployment" "nginx_example" {
+  metadata {
+    name      = "nginx-example"
+    namespace = "ingress"
+
+    labels = {
+      app = "nginx-example"
+    }
+  }
+
+  spec {
+    replicas = 2
+
+    selector {
+      match_labels = {
+        app = "nginx-example"
+      }
+    }
+
+    template {
+      metadata {
+        labels = {
+          app = "nginx-example"
+        }
+      }
+
+      spec {
+        container {
+          image = "nginx:stable"
+          name  = "nginx-example"
+
+          resources {
+            limits = {
+              cpu    = "200m"
+              memory = "256Mi"
+            }
+            requests = {
+              cpu    = "100m"
+              memory = "128Mi"
+            }
+          }
+
+        }
+      }
+    }
+  }
+}
+
+resource "kubernetes_service" "nginx_example" {
+  metadata {
+    name      = "nginx-example"
+    namespace = "ingress"
+  }
+
+  spec {
+    selector = {
+      app = kubernetes_deployment.nginx_example.spec.template.metadata.0.labels.app
+    }
+
+    port {
+      port        = 80
+      target_port = 80
+      protocol    = "TCP"
+    }
+
+    type = "ClusterIP"
+  }
+}
