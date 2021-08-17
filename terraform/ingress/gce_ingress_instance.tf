@@ -105,3 +105,8 @@ resource "google_compute_instance" "ingress" {
     google_kms_crypto_key_iam_policy.ingress
   ]
 }
+
+output "public_ingress_ip" {
+  description = "Public ingress IP for Traefik ingress load-balancer, which fronts cluster Ingresses"
+  value       = google_compute_address.ingress_instance_ip.address
+}
