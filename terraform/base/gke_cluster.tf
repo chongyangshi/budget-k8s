@@ -148,6 +148,15 @@ resource "google_container_node_pool" "preemptible_nodes_first_pool" {
     }
 
     boot_disk_kms_key = google_kms_crypto_key.cluster.id
+
+    // For some reason, even if the service account has read-only permissions
+    // on the storage bucket for GCR, the nodes still can't access it without
+    // scopes for devstorage.read_only also being set.
+    oauth_scopes = [
+      "https://www.googleapis.com/auth/devstorage.read_only",
+      "https://www.googleapis.com/auth/logging.write",
+      "https://www.googleapis.com/auth/monitoring",
+    ]
     service_account   = google_service_account.cluster.email
 
     // We do not use gVisor with sandbox_config, as it will turn off
@@ -204,6 +213,15 @@ resource "google_container_node_pool" "preemptible_nodes_second_pool" {
     }
 
     boot_disk_kms_key = google_kms_crypto_key.cluster.id
+
+    // For some reason, even if the service account has read-only permissions
+    // on the storage bucket for GCR, the nodes still can't access it without
+    // scopes for devstorage.read_only also being set.
+    oauth_scopes = [
+      "https://www.googleapis.com/auth/devstorage.read_only",
+      "https://www.googleapis.com/auth/logging.write",
+      "https://www.googleapis.com/auth/monitoring",
+    ]
     service_account   = google_service_account.cluster.email
 
     // We do not use gVisor with sandbox_config, as it will turn off

@@ -30,3 +30,15 @@ resource "google_project_iam_member" "cluster_resource_metadata_viewer" {
   role    = "roles/stackdriver.resourceMetadata.writer"
   member  = "serviceAccount:${google_service_account.cluster.email}"
 }
+
+resource "google_project_iam_member" "cluster_storage_viewer" {
+  project = var.project_id
+  role    = "roles/storage.objectViewer"
+  member  = "serviceAccount:${google_service_account.cluster.email}"
+  
+  condition {
+    title       = "ReadAccessToGCR"
+    description = ""
+    expression  = "resource.name.startsWith(\"projects/_/buckets/${google_container_registry.cluster.id}\")"
+  }
+}
