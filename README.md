@@ -150,6 +150,8 @@ In the above example:
 
 By default traffic between Kubernetes namespaces are not restricted, so `nginx-test` could for example then reverse proxy traffic it receives to a Java backend application running in the `default` namespace. It is recommended however that you set up [ingress network policies](https://kubernetes.io/docs/concepts/services-networking/network-policies/) to allow only the terminating replicas like `nginx-test` to reach those backend applications.
 
+An example of an ingress service configured using the Terraform Kubernetes Provider can be found within `terraform/ingress/gke_ingresses.tf.example`, uncomment and modify to re-use.
+
 ### Middlewares and other custom Traefik configurations
 
 A special template file under `terraform/ingress/instance_resources/middlewares.yaml` has been created to host custom [middleware configurations](https://doc.traefik.io/traefik/middlewares/overview/), which are built-in Traefik extensions which perform custom request handling behaviours such as passing Proxy Protocol headers or performing basic HTTP auth. Two such examples are present in this file: `testBasicAuth` and `testProxyProtocolHeader`.
