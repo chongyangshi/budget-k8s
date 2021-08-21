@@ -94,6 +94,8 @@ module "service_nginx_example" {
   service_name      = "nginx-example"
   service_port      = 80
   service_namespace = "ingress"
+
+  traefik_terminate_tls = true
 }
 ```
 
@@ -107,7 +109,7 @@ A special template file under `terraform/ingress/instance_resources/middlewares.
 
 This file can also hold other [custom configurations](https://doc.traefik.io/traefik/reference/dynamic-configuration/file/) for Traefik. This file is loaded into the runtime when the ingress load-balancing instance is started.
 
-Once a proxy protocol has been configured and the ingress load-balancing instance restarted, middlewares can be loaded for each Ingress object using the annotation `traefik.ingress.kubernetes.io/router.middlewares`, for example `traefik.ingress.kubernetes.io/router.middlewares: testBasicAuth@file`.
+Once the template file has has been re-applied via Terraform and the ingress load-balancing instance restarted in the process, middlewares can be loaded for each Ingress object by passing a list of their names with `@file` suffixes into the `service_traefik_middlewares` variable, as shown in the example from the previous section.
 
 ## Estimated cost of upkeep
 

@@ -33,6 +33,12 @@ variable "service_port" {
   default     = 80
 }
 
+variable "service_traefik_middlewares" {
+  type        = list(string)
+  description = "A list of Traefik applicable middlewares for this service (e.g. 'testBasicAuth@file'). All middleware refeenced should have been configured for the ingress instance in terraform/ingress/instance_resources/middlewares.yaml"
+  default     = []
+}
+
 variable "service_protocol" {
   type        = string
   description = "Protocol for the Kubernetes Service receiving ingress traffic, note that while our service proxy supports both TCP and UDP, normally only HTTP/HTTPS TCP will be forwarded by Traefik"

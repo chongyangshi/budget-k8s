@@ -18,9 +18,12 @@ module "service_nginx_example" {
   // from Traefik across namespaces.
   service_namespace = "ingress"
   
-  // Other configurations, such as not terminating TLS with Traefik, or
-  // using a vendored service proxy nginx image, can be configured in
-  // service_proxy/variables.tf
+  // Other configurations, such as customly-configured middlewares, not 
+  // terminating TLS with Traefik, and using a vendored service proxy nginx 
+  // image, can be configured in service_proxy/variables.tf
+  
+  // traefik_terminate_tls = false
+  // service_traefik_middlewares = ["testBasicAuth@file", "testProxyProtocolHeader@file"]
 }
 
 // Example deployment in the ingress namespace receiving forwarded

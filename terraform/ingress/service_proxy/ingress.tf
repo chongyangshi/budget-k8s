@@ -1,9 +1,11 @@
 locals {
-  sans = length(var.service_hostnames) > 1 ? slice(var.service_hostnames, 1, length(var.service_hostnames)) : []
+  sans        = length(var.service_hostnames) > 1 ? slice(var.service_hostnames, 1, length(var.service_hostnames)) : []
+  middlewares = length(var.service_traefik_middlewares) > 0 ? join(",", var.service_traefik_middlewares) : null
 
   tls_annotations = {
     "kubernetes.io/ingress.class"                             = "traefik"
     "traefik.ingress.kubernetes.io/router.entrypoints"        = "websecure"
+    "traefik.ingress.kubernetes.io/router.middlewares"        = local.middlewares
     "traefik.ingress.kubernetes.io/router.tls"                = "true"
     "traefik.ingress.kubernetes.io/router.tls.certresolver"   = "default"
     "traefik.ingress.kubernetes.io/router.tls.domains.0.main" = var.service_hostnames[0]
@@ -13,6 +15,7 @@ locals {
   no_tls_annotations = {
     "kubernetes.io/ingress.class"                      = "traefik"
     "traefik.ingress.kubernetes.io/router.entrypoints" = "websecure"
+    "traefik.ingress.kubernetes.io/router.middlewares" = local.middlewares
     "traefik.ingress.kubernetes.io/router.tls"         = "false"
   }
 
