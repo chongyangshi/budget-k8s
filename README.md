@@ -80,77 +80,26 @@ terraform apply
 
 Traefik implements its Kubernetes TLS secret controller with Reflection, as a result it requires the ability to list all secrets in all namespaces it watches for new ingress resources in by default, and [stubbornly refuses](https://github.com/traefik/traefik/issues/7097) to provide a config option to turn off the code rquiring secret access, even if the user does not want to load any TLS certificates.
 
-We therefore have had to set up a namespace dedicated to services that will be exposed via Traefik, and make that namespace is the only one in which Traefik is configured to be able to read all secrets. This namespace is called **`ingress`** and is configured by the `ingress` layer. You should only run services which directly terminate ingress traffic in this namespace. The manifests for such a service looks like the following:
+We therefore have had to set up a namespace dedicated to services that will be exposed via Traefik, and make that namespace is the only one in which Traefik is configured to be able to read all secrets. This namespace is called **`ingress`** and is configured by the `ingress` layer. 
 
-```yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: nginx-test
-  namespace: ingress
-spec:
-  selector:
-    matchLabels:
-      app: nginx-test
-  replicas: 2 
-  template:
-    metadata:
-      labels:
-        app: nginx-test
-    spec:
-      containers:
-      - name: nginx
-        image: nginx:1.14.2
-        ports:
-        - containerPort: 80
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: nginx-test
-  namespace: ingress
-spec:
-  selector:
-    app: nginx-test
-  ports:
-    - protocol: TCP
-      port: 80
-      targetPort: 80
----
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: nginx-test
-  namespace: ingress
-  annotations:
-    kubernetes.io/ingress.class: "traefik"
-    traefik.ingress.kubernetes.io/router.entrypoints: websecure
-    traefik.ingress.kubernetes.io/router.tls: "true"
-    traefik.ingress.kubernetes.io/router.tls.certresolver: default
-    traefik.ingress.kubernetes.io/router.tls.domains.0.main: "your-domain.example.com"
-spec:
-  rules:
-  - host: your-domain.example.com
-    http:
-      paths:
-      - pathType: Prefix
-        path: "/"
-        backend:
-          service:
-            name: nginx-test
-            port:
-              number: 80
+For backend services which don't need secrets to run, or whose secrets are not sensitive enough and we don't need to worry about them if Traefik is compromised, they can run in the `ingress` namespace itself. Any service with sufficiently sensitive secrets should run in a namespace in which Traefik has no access to secrets. But since Traefik will then refuse to forward traffic into these namespaces, we will need to setup a light-weight service proxy for each such backend service in the `ingress` namespace using Nginx. 
+
+The entire process of configuring ingress for each backend service, whether running in the `ingress` namespace or another, has been streamlined in this template via the `terraform/ingress/service_proxy` module. 
+
+```tf
+module "service_nginx_example" {
+  source = "./service_proxy"
+
+  service_hostnames = ["example.com", "www.example.com"]
+  service_name      = "nginx-example"
+  service_port      = 80
+  service_namespace = "ingress"
+}
 ```
 
-In the above example:
-
-* We have an ingress-terminating Deployment called `nginx-test` set up with 2 replicas in the `ingress` namespace, which serves plaintext traffic on TCP 80;
-* A corresponding `nginx-test` Service resource, which tells Kubernetes to forward terminating traffic to the Deployment's replicas;
-* A corresponding `nginx-test` Ingress resource, which tells Traefik Proxy (running on the ingress load-balancing GCE instance) to set up TLS termination for our hostname `your-domain.example.com`, and then send traffic for that domain to be terminated by the `nginx-test` Service in plaintext.
+See `terraform/ingress/gke_ingresses.tf.example` for more details.
 
 By default traffic between Kubernetes namespaces are not restricted, so `nginx-test` could for example then reverse proxy traffic it receives to a Java backend application running in the `default` namespace. It is recommended however that you set up [ingress network policies](https://kubernetes.io/docs/concepts/services-networking/network-policies/) to allow only the terminating replicas like `nginx-test` to reach those backend applications.
-
-An example of an ingress service configured using the Terraform Kubernetes Provider can be found within `terraform/ingress/gke_ingresses.tf.example`, uncomment and modify to re-use.
 
 ### Middlewares and other custom Traefik configurations
 

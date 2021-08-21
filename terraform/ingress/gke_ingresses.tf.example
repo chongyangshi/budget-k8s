@@ -1,52 +1,27 @@
-// This file stores ingress specifications for Traefik to forward to// This file stores ingress specifications for Traefik to forward to
+// This file stores ingress specifications for Traefik to forward to
 
-resource "kubernetes_ingress" "nginx_example" {
-  metadata {
-    name      = "nginx-example"
-    namespace = "ingress"
+module "service_nginx_example" {
+  source = "./service_proxy"
 
-    annotations = {
-      // This is a fixed ingress class for all services to be fronted by Traefik 
-      "kubernetes.io/ingress.class" = "traefik"
-      
-      // Uses the testBasicAuth HTTP basic auth middleware configured under 
-      // instance_resources/middlewares.yaml
-      "traefik.ingress.kubernetes.io/router.middlewares" = "testBasicAuth@file"
+  // First domain will be used as the main TLS name and common name by
+  // the Let's Encrypt ACME client, all will be present as SANs on the
+  // certificate.
+  service_hostnames = ["example.com", "www.example.com"]
 
-      // Configures ACME and automatic TLS
-      "traefik.ingress.kubernetes.io/router.entrypoints" = "websecure"
-      "traefik.ingress.kubernetes.io/router.tls" = "true"
-      "traefik.ingress.kubernetes.io/router.tls.certresolver" = "default"
-      "traefik.ingress.kubernetes.io/router.tls.domains.0.main" = "test.example.com"
-    }
-  }
+  // Backend service name and port for traffic to be forwarded to
+  service_name      = "nginx-example"
+  service_port      = 80
 
-  spec {
-    backend {
-      service_name = "nginx-example"
-      service_port = 80
-    }
-
-    rule {
-      host = "test.example.com"
-
-      http {
-        path {
-          backend {
-            service_name = "nginx-example"
-            service_port = 80
-          }
-
-          path = "/"
-        }
-    }
-
-    // No TLS block, as Traefik will terminate TLS using the default certresolver
-    // for the domain specified in the "traefik.ingress.kubernetes.io/router.tls.
-    // domains.0.main" annotation to generate a Let's Encrypt ACME certficate.
-  }
+  // Backend service namespace for the above, if in a namespace different
+  // from the ingress namespace, an nginx service proxy will be created
+  // automatically in the ingress namespace to forward ingress traffic 
+  // from Traefik across namespaces.
+  service_namespace = "ingress"
+  
+  // Other configurations, such as not terminating TLS with Traefik, or
+  // using a vendored service proxy nginx image, can be configured in
+  // service_proxy/variables.tf
 }
-
 
 // Example deployment in the ingress namespace receiving forwarded
 // traffic from Traefik. You may wish to use Helm instead of the
