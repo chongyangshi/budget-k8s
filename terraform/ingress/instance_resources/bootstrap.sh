@@ -59,6 +59,9 @@ sudo chown traefik:traefik /etc/traefik/logs/access.log
 sudo chmod 644 /etc/traefik/logs/access.log
 sudo ln -s /etc/traefik/logs/access.log /var/log/access.log
 
+# Sets up auto rotation for logs
+sudo echo "${traefik_logrotate_conf}" | base64 --decode > /etc/logrotate.d/traefik
+
 # Sets up Traefik's systemd service config and starts it
 sudo echo "${traefik_service_file}" | base64 --decode > /etc/systemd/system/traefik.service
 sudo chown root:root /etc/systemd/system/traefik.service

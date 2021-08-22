@@ -10,6 +10,8 @@ locals {
     traefik_service_token = data.kubernetes_secret.traefik_service_token.data.token,
   }))
 
+  traefik_logrotate_file = filebase64("${path.module}/instance_resources/logrotate.conf")
+
   traefik_service_file = filebase64("${path.module}/instance_resources/traefik.service")
 
   traefik_middlewares_file = fileexists("${path.module}/instance_resources/middlewares_override.yaml") ? filebase64("${path.module}/instance_resources/middlewares_override.yaml") : filebase64("${path.module}/instance_resources/middlewares.yaml")
@@ -78,6 +80,7 @@ resource "google_compute_instance" "ingress" {
     traefik_config_file      = local.traefik_config_file,
     traefik_service_file     = local.traefik_service_file,
     traefik_middlewares_file = local.traefik_middlewares_file,
+    traefik_logrotate_conf   = local.traefik_logrotate_file,
     gke_control_plane_ca     = data.google_container_cluster.cluster.master_auth.0.cluster_ca_certificate,
   })
 
