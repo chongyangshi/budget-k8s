@@ -59,7 +59,7 @@ This project uses two different providers:
 * `hashicorp/google` (and associated `hashicorp/google-beta`) for GCP resources
 * `hashicorp/kubernetes` for in-cluster configurations of the ingress Traefik Proxy and associated GCP resources
 
-Becaus until the `google` provider has created the actual GKE Kubernetes cluster, the `kubernetes` provider cannot be configured fully -- a dependency between the two providers -- it is somewhat necessary for the template to be split in two layers so that they could be bootstrapped cleanly.
+Because until the `google` provider has created the actual GKE Kubernetes cluster, the `kubernetes` provider cannot be configured fully -- a dependency between the two providers -- it is somewhat necessary for the template to be split in two layers so that they could be bootstrapped cleanly.
 
 Therefore, you should execute the standard Terraform apply process below in the following order:
 
@@ -101,7 +101,7 @@ module "service_nginx_example" {
 
 See `terraform/ingress/gke_ingresses.tf.example` for more details.
 
-By default traffic between Kubernetes namespaces are not restricted, so `nginx-test` could for example then reverse proxy traffic it receives to a Java backend application running in the `default` namespace. It is recommended however that you set up [ingress network policies](https://kubernetes.io/docs/concepts/services-networking/network-policies/) to allow only the terminating replicas like `nginx-test` to reach those backend applications.
+By default traffic between Kubernetes namespaces are not restricted, so for example the service proxy created automatically from the above could then reverse proxy traffic it receives to an `nginx-default` Pod running in the `default` namespace. It is recommended however that you set up [ingress network policies](https://kubernetes.io/docs/concepts/services-networking/network-policies/) to allow only the terminating replicas like `nginx-test` to reach those backend applications.
 
 ### Middlewares and other custom Traefik configurations
 
