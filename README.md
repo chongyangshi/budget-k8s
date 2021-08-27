@@ -113,7 +113,23 @@ Once the template file has has been re-applied via Terraform and the ingress loa
 
 ## Estimated cost of upkeep
 
-WIP
+The following typical daily costs were billed by Google Cloud Platform running my 3-node cluster in an availability zone of the `europe-west-2` (London) region, comprising of a first preemptible node pool of two  `n2d-standard-2` instances and a second preemptible node pool of one `n2d-standard-4` instance:
+
+| Service                                         | Daily Cost (£) | 30-Day Extrapolation (£)  |
+| ----------------------------------------------- | -------------- | ------------------------- |
+| GCE N2D VM Worker Nodes Preemptible CPU and RAM | 1.66           | 49.80                     |
+| GCE VM Standard Disk & ~70GB of K8s PV Disk     | 0.25           |  7.50                     |
+| GCE E2 Ingress VM Persistent CPU and RAM        | 0.18           |  5.40                     |
+| KMS Software Cryptographic Operations           | 0.02           |  0.60                     |
+| NAT Gateway Data Processing                     | 0.01           |  0.30                     |
+| KMS Active Symmetric Key Versions               | <sup>*</sup>   |  0.10                     |
+| Network Egress via Carrier Peering (Cloudflare) | <sup>*</sup>   |  0.36 (10 GB at 0.036/GB) |
+| Other daily costs<sup>*</sup>                   | 0.14           |  4.20                     |
+| **total**                                       | **2.26**       | **67.80**                 |
+
+<sup>*</sup> _Cost items such as VM-initiated network egress, Google Container Registry and static IP charge which are individually too small to register on the BigQuery billing export data._
+
+A potential optimisation for my current cluster workloads is to change from using `n2d-standard-2` and `n2d-standard-4` instances (with 8GB and 16GB of RAM respectively) to using a mix of `n2d-standard-2` and `n2d-highcpu-4` instances (with 2GB and 4GB of RAM respectively), as my workloads at the time of writing requested ~83.6% of allocatable CPU and ~35.8% of allocatable memory. This will further shave a small proportion of the preemptible instance cost.
 
 ## Disclaimer
 
