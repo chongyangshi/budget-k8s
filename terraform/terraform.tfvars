@@ -19,9 +19,9 @@ external_control_plane_access_ranges = ["12.34.56.78/32"]
 
 # Adjust the instance types and counts for the two node pools to provision different worker nodes.
 # See here for lists of spec and pricing: https://cloud.google.com/compute/vm-instance-pricing
-node_pools_first_instance_type   = "n2-standard-2"
+node_pools_first_instance_type   = "n2d-standard-2"
 node_pools_first_instance_count  = 2
-node_pools_second_instance_type  = "n2-standard-4"
+node_pools_second_instance_type  = "n2d-standard-4"
 node_pools_second_instance_count = 1
 
 # CHANGEME: set this to an email you want to use for registering with Let's Encrypt, so that Traefik will be able
