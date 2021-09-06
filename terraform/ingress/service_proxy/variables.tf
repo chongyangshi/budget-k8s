@@ -12,6 +12,12 @@ variable "ingress_name" {
   default     = ""
 }
 
+variable "ingress_port" {
+  type        = number
+  description = "The port exposed to the internet for ingress traffic to the service_hostnames. Only effective if the backend service runs in a non-ingress namespace, otherwise the service_port will be exposed instead."
+  default     = 80
+}
+
 variable "service_hostnames" {
   type        = list(string)
   description = "A list of hostnames (e.g. example.com, www.example.com) for which this service should accept ingress traffic"
@@ -29,7 +35,7 @@ variable "service_namespace" {
 
 variable "service_port" {
   type        = number
-  description = "Service Port (not the Container Port which may be different) for the Kubernetes Service receiving ingress traffic"
+  description = "Backend service port (not the Container Port which may be different) for the Kubernetes Service receiving ingress traffic for the service_hostnames. This port is exposed directly if the service runs in the namespace(s) receiving ingress from Traefik, else ingress_port will be exposed instead."
   default     = 80
 }
 

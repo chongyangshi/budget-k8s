@@ -38,7 +38,7 @@ resource "kubernetes_ingress" "service" {
   spec {
     backend {
       service_name = local.backend_service_name
-      service_port = var.service_port
+      service_port = local.requires_service_proxy ? var.ingress_port : var.service_port
     }
 
     dynamic "rule" {
@@ -49,7 +49,7 @@ resource "kubernetes_ingress" "service" {
           path {
             backend {
               service_name = local.backend_service_name
-              service_port = var.service_port
+              service_port = local.requires_service_proxy ? var.ingress_port : var.service_port
             }
 
             path = "/"

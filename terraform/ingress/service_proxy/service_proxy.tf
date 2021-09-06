@@ -49,7 +49,7 @@ resource "kubernetes_service" "service_proxy" {
     session_affinity = "ClientIP"
 
     port {
-      port        = var.service_port
+      port        = var.ingress_port
       target_port = local.container_port
     }
 
