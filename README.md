@@ -59,7 +59,7 @@ This project uses two different providers:
 * `hashicorp/google` (and associated `hashicorp/google-beta`) for GCP resources
 * `hashicorp/kubernetes` for in-cluster configurations of the ingress Traefik Proxy and associated GCP resources
 
-Becaus until the `google` provider has created the actual GKE Kubernetes cluster, the `kubernetes` provider cannot be configured fully -- a dependency between the two providers -- it is somewhat necessary for the template to be split in two layers so that they could be bootstrapped cleanly.
+Because until the `google` provider has created the actual GKE Kubernetes cluster, the `kubernetes` provider cannot be configured fully -- a dependency between the two providers -- it is somewhat necessary for the template to be split in two layers so that they could be bootstrapped cleanly.
 
 Therefore, you should execute the standard Terraform apply process below in the following order:
 
@@ -101,7 +101,7 @@ module "service_nginx_example" {
 
 See `terraform/ingress/gke_ingresses.tf.example` for more details.
 
-By default traffic between Kubernetes namespaces are not restricted, so `nginx-test` could for example then reverse proxy traffic it receives to a Java backend application running in the `default` namespace. It is recommended however that you set up [ingress network policies](https://kubernetes.io/docs/concepts/services-networking/network-policies/) to allow only the terminating replicas like `nginx-test` to reach those backend applications.
+By default traffic between Kubernetes namespaces are not restricted, so for example the service proxy created automatically from the above could then reverse proxy traffic it receives to an `nginx-default` Pod running in the `default` namespace. It is recommended however that you set up [ingress network policies](https://kubernetes.io/docs/concepts/services-networking/network-policies/) to allow only the terminating replicas like `nginx-test` to reach those backend applications.
 
 ### Middlewares and other custom Traefik configurations
 
@@ -113,7 +113,23 @@ Once the template file has has been re-applied via Terraform and the ingress loa
 
 ## Estimated cost of upkeep
 
-WIP
+The following typical daily costs were billed by Google Cloud Platform running my 3-node cluster in an availability zone of the `europe-west-2` (London) region, comprising of a first preemptible node pool of two  `n2d-standard-2` instances and a second preemptible node pool of one `n2d-standard-4` instance:
+
+| Service                                         | Daily Cost (£) | 30-Day Extrapolation (£)  |
+| ----------------------------------------------- | -------------- | ------------------------- |
+| GCE N2D VM Worker Nodes Preemptible CPU and RAM | 1.66           | 49.80                     |
+| GCE VM Standard Disk & ~70GB of K8s PV Disk     | 0.25           |  7.50                     |
+| GCE E2 Ingress VM Persistent CPU and RAM        | 0.18           |  5.40                     |
+| KMS Software Cryptographic Operations           | 0.02           |  0.60                     |
+| NAT Gateway Data Processing                     | 0.01           |  0.30                     |
+| KMS Active Symmetric Key Versions               | <sup>*</sup>   |  0.10                     |
+| Network Egress via Carrier Peering (Cloudflare) | <sup>*</sup>   |  0.36 (10 GB at 0.036/GB) |
+| Other daily costs<sup>*</sup>                   | 0.14           |  4.20                     |
+| **total**                                       | **2.26**       | **67.80**                 |
+
+<sup>*</sup> _Cost items such as VM-initiated network egress, Google Container Registry and static IP charge which are individually too small to register on the BigQuery billing export data._
+
+A potential optimisation for my current cluster workloads is to change from using `n2d-standard-2` and `n2d-standard-4` instances (with 8GB and 16GB of RAM respectively) to using a mix of `n2d-standard-2` and `n2d-highcpu-4` instances (with 2GB and 4GB of RAM respectively), as my workloads at the time of writing requested ~83.6% of allocatable CPU and ~35.8% of allocatable memory. This will further shave a small proportion of the preemptible instance cost.
 
 ## Disclaimer
 
