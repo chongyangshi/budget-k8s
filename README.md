@@ -129,7 +129,7 @@ The following typical daily costs were billed by Google Cloud Platform running m
 
 <sup>*</sup> _Cost items such as VM-initiated network egress, Google Container Registry and static IP charge which are individually too small to register on the BigQuery billing export data._
 
-A potential optimisation for my current cluster workloads is to change from using `n2d-standard-2` and `n2d-standard-4` instances (with 8GB and 16GB of RAM respectively) to using a mix of `n2d-standard-2` and `n2d-highcpu-4` instances (with 2GB and 4GB of RAM respectively), as my workloads at the time of writing requested ~83.6% of allocatable CPU and ~35.8% of allocatable memory. This will further shave a small proportion of the preemptible instance cost.
+A potential optimisation for my current cluster workloads is to change from using `n2d-standard-2` and `n2d-standard-4` instances (with 8GB and 16GB of RAM respectively) to using custom instance shapes better matching my CPU and memory utilisation ratio, as my workloads at the time of writing requested ~83.6% of allocatable CPU and ~35.8% of allocatable memory. This will further shave a small proportion of the preemptible instance cost.
 
 ## Disclaimer
 
