@@ -41,7 +41,11 @@ resource "google_compute_firewall" "allow_from_iap" {
 }
 
 // Allows traffic forwarded from the ingress instance to reach arbitrary
-// TCP or UDP Node Ports on Kubernetes nodes
+// TCP or UDP Node Ports on Kubernetes nodes. To prevent Traefik from 
+// accesing container ports on Pods not intended to be accessible via
+// the ingress instance, non-ingress namespaces should have a default 
+// NetworkPolicy preventing cross-namespace traffic unless allowlisted
+// by more specific NetworkPolicies of workloads accepting such traffic.
 resource "google_compute_firewall" "allow_ingress" {
   name = "allow-ingress"
 
