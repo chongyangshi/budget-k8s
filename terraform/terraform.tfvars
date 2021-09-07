@@ -14,6 +14,15 @@ container_registry_region = "US"
 external_ingress_tcp_ports = ["80", "443"]
 external_ingress_udp_ports = []
 
+# The following only need to be set if you intend to run service Pods in the `ingress` namespace directly,
+# which allows Pods to accept traffic forwarded by Traefik Proxy directly without a service proxy in the
+# middle. This will result in any Secrets they need access to be accessible by Traefik, which is not
+# recommended. 
+# Ports should be set as the targetPort for all ClusterIP Services, and nodePorts for all NodePort Services 
+# in the `ingress` namespace intended to be reachable from Traefik.
+ingress_namespace_tcp_ports = []
+ingress_namespace_udp_ports = []    
+
 # CHANGEME: set this to your home or VPN network range for accessing your cluster control plane remotely
 external_control_plane_access_ranges = ["12.34.56.78/32"]
 

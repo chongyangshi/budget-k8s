@@ -33,6 +33,18 @@ variable "external_ingress_udp_ports" {
   default     = []
 }
 
+variable "ingress_namespace_tcp_ports" {
+  type        = list(string)
+  description = "All TCP ports (in string literals) which are targetPorts / container ports of any ClusterIP Services accepting ingress traffic, or nodePorts of any NodePort Services accepting ingress traffic. Only needs to be set if running in the ingress namespace (not recommended), as service proxy Pods will forward traffic from Traefik Proxy automatically."
+  default     = []
+}
+
+variable "ingress_namespace_udp_ports" {
+  type        = list(string)
+  description = "All UDP ports (in string literals) which are targetPorts / container ports of any ClusterIP Services accepting ingress traffic, or nodePorts of any NodePort Services accepting ingress traffic. Only needs to be set if running in the ingress namespace (not recommended), as service proxy Pods will forward traffic from Traefik Proxy automatically."
+  default     = []
+}
+
 variable "external_control_plane_access_ranges" {
   type        = list(string)
   description = "List of external IP address ranges allowed to access the GKE Kubernetes control plane"

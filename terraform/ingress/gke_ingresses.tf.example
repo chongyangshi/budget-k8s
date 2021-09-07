@@ -13,21 +13,18 @@ module "service_nginx_example" {
   service_port      = 80
 
   // Backend service namespace for the above, if in a namespace different
-  // from the ingress namespace, an nginx service proxy will be created
-  // automatically in the ingress namespace to forward ingress traffic 
-  // from Traefik across namespaces.
-  service_namespace = "ingress"
-
-  // If the backend service runs in a namespace different from the ingress
-  // namespace, the service proxy port exposed to Traefik (and via it the
-  // internet) can be made different to the actual backend service port
-  // and its Pods' container ports. This allows GCP firewall policies to
-  // shield backend ports over VPC-native networking in the event the  
-  // ingress instance is compromised. If set, this port must be allowed in
-  // external_ingress_tcp_ports and/or external_ingress_udp_ports.
-  // If the service_namespace is the same as the ingress namespace, then 
-  // this option takes no effect.
-  ingress_port      = 80
+  // from the ingress namespace (recommended), an NGINX service proxy will 
+  // be created automatically in the ingress namespace to forward ingress 
+  // traffic from Traefik across namespaces.
+  // N.B. If the backend service runs in the ingress namespace directly, 
+  // there will be no service proxy created, and you must add the 
+  // **container port** for the Pods targeted by the service (which may be 
+  // different from the service_port) to `ingress_namespace_tcp_ports` or 
+  // `ingress_namespace_udp_ports` in terraform.tfvars for ingress traffic
+  // to those services to work. This will allow Traefik to access all Pods
+  // listening on the same container port number, which reduces the security
+  // of the cluster, and this setup is therefore not recommended.
+  service_namespace = "default"
   
   // Other configurations, such as customly-configured middlewares, not 
   // terminating TLS with Traefik, and using a vendored service proxy nginx 
@@ -44,7 +41,7 @@ module "service_nginx_example" {
 resource "kubernetes_deployment" "nginx_example" {
   metadata {
     name      = "nginx-example"
-    namespace = "ingress"
+    namespace = "default"
 
     labels = {
       app = "nginx-example"
@@ -92,7 +89,7 @@ resource "kubernetes_deployment" "nginx_example" {
 resource "kubernetes_service" "nginx_example" {
   metadata {
     name      = "nginx-example"
-    namespace = "ingress"
+    namespace = "default"
   }
 
   spec {

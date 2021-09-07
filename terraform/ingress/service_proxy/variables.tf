@@ -1,5 +1,3 @@
-// TODO: middlewares
-
 variable "ingress_namespace" {
   type        = string
   description = "Namespace watched by Traefik for routing ingress traffic"
@@ -10,12 +8,6 @@ variable "ingress_name" {
   type        = string
   description = "A unique name for this ingress, defaults to service_name if empty; fill this if multiple ingresses are created for the same service"
   default     = ""
-}
-
-variable "ingress_port" {
-  type        = number
-  description = "The port exposed to the internet for ingress traffic to the service_hostnames. Only effective if the backend service runs in a non-ingress namespace, otherwise the service_port will be exposed instead."
-  default     = 80
 }
 
 variable "service_hostnames" {
@@ -35,7 +27,7 @@ variable "service_namespace" {
 
 variable "service_port" {
   type        = number
-  description = "Backend service port (not the Container Port which may be different) for the Kubernetes Service receiving ingress traffic for the service_hostnames. This port is exposed directly if the service runs in the namespace(s) receiving ingress from Traefik, else ingress_port will be exposed instead."
+  description = "Backend port for the Kubernetes Service receiving ingress traffic for the service_hostnames, which is the service port for ClusterIP services, or nodePort for NodePort services."
   default     = 80
 }
 

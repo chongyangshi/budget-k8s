@@ -40,34 +40,40 @@ resource "google_compute_firewall" "allow_from_iap" {
   source_ranges = local.gcp_iap_ranges
 }
 
-// Allows traffic forwarded from the ingress instance to reach arbitrary
-// TCP or UDP Node Ports on Kubernetes nodes. This is because we cannot
-// predict what service_port will be specified in the ingress layer via
-// ingress/gke_ingresses.tf. This does present an internal network 
-// security risk. 
-// To prevent Traefik from accesing container ports on Pods not intended 
-// to be accessible via the ingress instance, there are two options:
-// (1) Set up a default network policy for each non-ingress namespace
-//     preventing cross-namespace traffic unless allowlisted by more 
-//     specific NetworkPolicies of workloads accepting such traffic.
-// (2) Run all services in namespaces other than the `ingress` 
-//     namespace, and ensure the backend service ports do not overlap
-//     with the external_ingress_tcp_ports or external_ingress_udp_ports.
-//     This way only service proxies generated for these backend services
-//     will bhave ports accessible by the Traefik Proxy.
-resource "google_compute_firewall" "allow_ingress" {
-  name = "allow-ingress"
+// Allows traffic forwarded from the ingress instance to reach TCP or 
+// UDP Node Ports on Kubernetes nodes, and TCP or UDP container (target) 
+// ports on Pod IPs using VPC-native networking.
+resource "google_compute_firewall" "allow_cluster_ingress" {
+  name = "allow-cluster-ingress"
 
   network   = google_compute_network.vpc.name
   direction = "INGRESS"
   project   = var.project_id
 
+  // Allow traffic to the service proxy container ports, for more details
+  // see ingress/service_proxy/service_proxy.tf
   allow {
     protocol = "tcp"
+    ports    = ["18080"]
   }
 
-  allow {
-    protocol = "udp"
+  // Allow traffic to other TCP and UDP ports if specificed, this is only
+  // needed if running Pods receiving ingress traffic directly in the
+  // ingress namespace.
+  dynamic "allow" {
+    for_each = length(var.ingress_namespace_tcp_ports) == 0 ? [] : [1]
+    content {
+      protocol = "tcp"
+      ports    = var.ingress_namespace_tcp_ports
+    }
+  }
+
+  dynamic "allow" {
+    for_each = length(var.ingress_namespace_udp_ports) == 0 ? [] : [1]
+    content {
+      protocol = "udp"
+      ports    = var.ingress_namespace_udp_ports
+    }
   }
 
   source_ranges = [google_compute_subnetwork.ingress.ip_cidr_range]

@@ -82,7 +82,7 @@ Traefik implements its Kubernetes TLS secret controller with Reflection, as a re
 
 We therefore have had to set up a namespace dedicated to services that will be exposed via Traefik, and make that namespace is the only one in which Traefik is configured to be able to read all secrets. This namespace is called **`ingress`** and is configured by the `ingress` layer. 
 
-For backend services which don't need secrets to run, or whose secrets are not sensitive enough and we don't need to worry about them if Traefik is compromised, they can run in the `ingress` namespace itself. Any service with sufficiently sensitive secrets should run in a namespace in which Traefik has no access to secrets. But since Traefik will then refuse to forward traffic into these namespaces, we will need to setup a light-weight service proxy for each such backend service in the `ingress` namespace using Nginx. 
+For backend services which don't need secrets to run, or whose secrets are not sensitive enough and we don't need to worry about them if Traefik is compromised, they could run in the `ingress` namespace itself. Any service with sufficiently sensitive secrets should run in a namespace in which Traefik has no access to secrets. But since Traefik will then refuse to forward traffic into these namespaces, we will need to setup a light-weight service proxy for each such backend service in the `ingress` namespace using NGINX.
 
 The entire process of configuring ingress for each backend service, whether running in the `ingress` namespace or another, has been streamlined in this template via the `terraform/ingress/service_proxy` module. 
 
@@ -93,7 +93,7 @@ module "service_nginx_example" {
   service_hostnames = ["example.com", "www.example.com"]
   service_name      = "nginx-example"
   service_port      = 80
-  service_namespace = "ingress"
+  service_namespace = "default"
 
   traefik_terminate_tls = true
 }

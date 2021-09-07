@@ -11,8 +11,10 @@ data "kubernetes_service" "kube_dns" {
 }
 
 locals {
-  // We always listen on the same container port for Layer 4 proxying to the Service Port
-  container_port          = 8080
+  // Service proxies always listen on the same container port 
+  // that is not likely to be used by the user, to allow 
+  // predictable a GCP firewall rule targeting their endpoints.
+  container_port          = 18080
   container_port_protocol = var.service_protocol == "UDP" ? "${local.container_port} udp" : "${local.container_port}"
 }
 
@@ -49,7 +51,7 @@ resource "kubernetes_service" "service_proxy" {
     session_affinity = "ClientIP"
 
     port {
-      port        = var.ingress_port
+      port        = var.service_port
       target_port = local.container_port
     }
 
