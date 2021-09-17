@@ -102,7 +102,7 @@ module "service_nginx_example" {
 
 See `terraform/ingress/gke_ingresses.tf.example` for more details.
 
-By default traffic between Kubernetes namespaces are not restricted, so for example the service proxy created automatically from the above could then reverse proxy traffic it receives to an `nginx-default` Pod running in the `default` namespace. It is recommended however that you set up [ingress network policies](https://kubernetes.io/docs/concepts/services-networking/network-policies/) to allow only the terminating replicas like `nginx-test` to reach those backend applications.
+By default traffic between Kubernetes namespaces are not restricted, so in the above example, the service proxy Pods created automatically in the `ingress` namespace could then reverse proxy traffic it receives from Traefik, to an `nginx-example` Pod running in the `default` namespace. It is recommended however that you set up [ingress network policies](https://kubernetes.io/docs/concepts/services-networking/network-policies/) to allow only the service proxy pods (which will always carry the Pod label `component: "service-proxy"`) to reach those backend applications across namespaces.
 
 ### Middlewares and other custom Traefik configurations
 
