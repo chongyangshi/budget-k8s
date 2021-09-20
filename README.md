@@ -11,7 +11,7 @@ This project is a template for creating a low-budget, managed Kubernetes environ
 * A pre-configured Google Container Registry (GCR) for storing private container images accessible from the cluster;
 * Pre-configured managed KMS encryption for all persistent disks and Kubernetes Secrets.
 
-For more details on the various cost-saving measures made possible within the context of personal projects, see [this blogpost (WIP)](http:///) for more details.
+For more details on the various cost-saving measures made possible within the context of personal projects, see [this blog post](https://blog.scy.email/managed-kubernetes-on-a-hobbyist-budget.html) for more details.
 
 As long as you are willing to expose your ingress traffic to a CDN, you should use one of the [CDN providers that is part of GCP's CDN Interconnect scheme](https://cloud.google.com/network-connectivity/docs/cdn-interconnect) (such as Cloudflare) to front as much internet traffic reaching your cluster ingress as possible. This way you will pay for most return egress traffic at a discounted rate.
 
