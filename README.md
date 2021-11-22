@@ -49,6 +49,12 @@ Because Terraform remote state should not be used for storing any sensitive secr
   * `terraform/base`
   * `terraform/ingess`
 
+5. Not essential, but it is recommended that you also request a preemptible instance limit by "Editing" the right value in the GCP `Quotas` panel, for the region you will run your cluster in, for example:
+
+![image](https://user-images.githubusercontent.com/8771937/142948710-63f92c5b-c280-4d43-adf8-c990489fc305.png)
+
+This may not be possible without upgrading to a paid billing account. I've observed that the regular CPU regional quotas for each instance CPU type like `N2_CPUS` or `N2D_CPUS` don't always reset correctly after GCP terminates preemptible instances, which are used by this infrastructure template. They occasionally cause "ghost" usages of the quota preventing your cluster from fully scaling up. From trial-and-error it seems that the special preemptible quotas reset more regularly than the regular quota.
+
 ### Configuration
 
 You can configure your project with `terraform/terraform.tfvars`. See `terraform/variables.tf` for more details on the configuration variables, as well as other options you can configure.
