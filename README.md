@@ -1,6 +1,6 @@
 # Budget Kubernetes for personal projects
 
-This project is a template for creating a low-budget, managed Kubernetes environment for running personal projects on Google Cloud Platform (GCP), while trading off as little in security and reliability as possible.
+This project is a template for creating a low-budget, managed Kubernetes environment for running personal projects on Google Cloud Platform (GCP), while trading off as little in security and reliability as possible -- with a cluster of 8 CPU cores and 16GB of memory costing under £50 a month VAT inclusive.
 
 ## What's in the box
 
