@@ -85,7 +85,7 @@ terraform apply
 
 ## Usage
 
-Traefik implements its Kubernetes TLS secret controller with Reflection, as a result it requires the ability to list all secrets in all namespaces it watches for new ingress resources in by default, and [stubbornly refuses](https://github.com/traefik/traefik/issues/7097) to provide a config option to turn off the code rquiring secret access, even if the user does not want to load any TLS certificates.
+Traefik implements its Kubernetes TLS secret controller with Reflection, as a result it requires the ability to list all secrets in all namespaces it watches for new ingress resources in by default, and [stubbornly refuses](https://github.com/traefik/traefik/issues/7097) to provide a config option to turn off the code requiring secret access, even if the user does not want to load any TLS certificates.
 
 We therefore have had to set up a namespace dedicated to services that will be exposed via Traefik, and make that namespace is the only one in which Traefik is configured to be able to read all secrets. This namespace is called **`ingress`** and is configured by the `ingress` layer. 
 
@@ -120,23 +120,24 @@ Once the template file has has been re-applied via Terraform and the ingress loa
 
 ## Estimated cost of upkeep
 
-The following typical daily costs were billed by Google Cloud Platform running my 3-node cluster in an availability zone of the `europe-west-2` (London) region, comprising of a first preemptible node pool of two  `n2d-custom-2-4096` instances and a second preemptible node pool of one `n2d-custom-4-8192` instance:
+The following typical daily costs were billed by Google Cloud Platform running my 3-node cluster in an availability zone of the `europe-west-2` (London) region, comprising of a first preemptible node pool of two  `n2-custom-2-4096` instances and a second preemptible node pool of one `n2-custom-4-8192` instance:
 
 | Service                                         | Daily Cost (£) | 30-Day Extrapolation (£)  |
 | ----------------------------------------------- | -------------- | ------------------------- |
-| GCE N2D VM Worker Nodes Preemptible CPU and RAM | 1.37           | 41.10                     |
-| GCE VM Standard Disk & ~70GB of K8s PV Disk     | 0.26           |  7.80                     |
-| GCE E2 Ingress VM Persistent CPU and RAM        | 0.18           |  5.40                     |
-| KMS Software Cryptographic Operations           | 0.02           |  0.60                     |
-| NAT Gateway Uptime and Data Processing          | 0.08           |  2.40                     |
-| KMS Active Symmetric Key Versions               | <sup>*</sup>   |  0.10                     |
-| Network Egress via Carrier Peering (Cloudflare) | <sup>*</sup>   |  0.36 (10 GB at 0.036/GB) |
-| Other daily costs<sup>*</sup>                   | 0.14           |  4.20                     |
-| **total**                                       | **2.07**       | **61.96**                 |
+| GCE N2 VM Worker Nodes Preemptible CPU and RAM  | 0.71           | 21.30                     |
+| GCE VM Standard Disk & ~70GB of K8s PV Disk     | 0.27           |  8.10                     |
+| GCE E2 Ingress VM Persistent CPU and RAM        | 0.20           |  6.00                     |
+| KMS Software Cryptographic Operations           | 0.03           |  0.60                     |
+| NAT Gateway Uptime and Data Processing          | 0.09           |  2.70                     |
+| KMS Active Symmetric Key Versions               | <0.01          |  0.10                     |
+| Network Egress via Carrier Peering (Cloudflare) | ≈0.01          |  0.36 (10 GB at 0.036/GB) |
+| **total**                                       | **1.32**       | **39.20**                 |
+| UK VAT (20%)                                    |                |  7.84                     |
+| **total**                                       |                | **47.04**                 |
 
 <sup>*</sup> _Cost items such as VM-initiated network egress, Google Container Registry and static IP charge which are individually too small to register on the BigQuery billing export data._
 
-The total usable computing resources covered by these costs is around 8 vCPUs and 16 GB of RAM a month.
+The total usable computing resources covered by these costs is around 8 vCPUs and 16 GB of RAM a month, minus overhead by cluster components.
 
 ## Disclaimer
 
