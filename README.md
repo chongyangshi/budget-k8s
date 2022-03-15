@@ -133,7 +133,7 @@ The following typical daily costs were billed by Google Cloud Platform running m
 | Network Egress via Carrier Peering (Cloudflare) | ≈0.01          |  0.36 (10 GB at 0.036/GB) |
 | **total**                                       | **1.32**       | **39.20**                 |
 | UK VAT (20%)                                    |                |  7.84                     |
-| **total**                                       |                | **47.04**                 |
+| **bill sum**                                    |                | **47.04**                 |
 
 <sup>*</sup> _Cost items such as VM-initiated network egress, Google Container Registry and static IP charge which are individually too small to register on the BigQuery billing export data._
 
