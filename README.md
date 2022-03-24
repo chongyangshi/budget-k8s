@@ -1,11 +1,11 @@
 # Budget Kubernetes for personal projects
 
-This project is a template for creating a low-budget, managed Kubernetes environment for running personal projects on Google Cloud Platform (GCP), while trading off as little in security and reliability as possible -- with a cluster of 8 CPU cores and 16GB of memory costing under £50 a month VAT inclusive.
+This project is a template for creating a low-budget, managed Kubernetes environment for running personal projects on Google Cloud Platform (GCP), while trading off as little in security and reliability as possible. This currently provides a cluster with 8 CPU cores and 16GB of memory for under £50 a month (VAT included).
 
 ## What's in the box
 
 * A **Virtual Private Cloud (VPC) network**, pre-configured in a reasonably locked down manner, but not obstructively so;
-* A **managed Kubernetes cluster** using Google Kuberenetes Engine (GKE), with best security practices (those not significantly elevating the personal project cost) configured out-of-box, on zonal mode with no cluster management cost;
+* A **managed Kubernetes cluster** using Google Kuberenetes Engine (GKE), with best security practices (those not significantly elevating the personal project cost) pre-configured out-of-box, on zonal mode with no cluster management cost;
 * A self-contained Google Compute Engine (GCE) **virtual machine for ingress load-balancing** using [Traefik Proxy](https://doc.traefik.io/traefik/), to avoid the high standing cost of GCP Load Balancers;
 * Wrapper module for quickly creating ingress endpoints for each hostname of services you wish to expose on the internet;
 * A pre-configured Google Container Registry (GCR) for storing private container images accessible from the cluster;
@@ -19,7 +19,7 @@ As long as you are willing to expose your ingress traffic to a CDN, you should u
 
 ### Preparation
 
-This template uses Terraform v1.0+, which is now generally available at the time of writing. It may still work with earlier versions of Terraform. It is recommended that you start a fresh GCP project for applying Terraform configurations from this template, in order to potential unexpected conflicts and data loss.
+This template uses Terraform v1.0+, which is now generally available at the time of writing. It may still work with earlier versions of Terraform. It is recommended that you start a fresh GCP project for applying Terraform configurations from this template, in order to avoid unexpected conflicts and data loss.
 
 1. Run `gcloud auth login` and `gcloud auth application-default login` first to configure your local command line credentials, if not yet done for your project. 
 
@@ -31,7 +31,7 @@ gcloud services enable container.googleapis.com
 gcloud services enable cloudkms.googleapis.com
 ```
 
-3. Due to the classic chicken-and-egg problem in Terraform, you then need to create a Terraform state bucket in Google Cloud Storage manually, and set up versioning for it (in case of a screw-up later), before you can apply any Terraform configurations:
+3. Due to the classic chicken-and-egg problem in Terraform, before you can apply any actual Terraform configurations, you need to create a Terraform state bucket in Google Cloud Storage manually, and set up versioning for it (in case of a screw-up later):
 
 ```bash
 gsutil mb -l EU -c STANDARD -b on gs://my-project-id-terraform-state
@@ -42,18 +42,16 @@ Note down the name you've chosen for your project's remote state bucket (e.g. `m
 
 Because Terraform remote state should not be used for storing any sensitive secrets, customer-managed key encryption will not yet be configured for this bucket. Instead the Google-managed transparent encryption key is used. If desired, you can Terraform an appropriate KMS key ring and customer-managed crypto key, and add this with `gsutil kms`, once everything has has been applied into your GCP project.
 
-4. You will also need to tell Terraform about the backend storage bucket you've created earlier. To do this, you can either:
+4. You will also need to tell Terraform about the backend storage bucket you've created above. To do this, you can should add your state storage bucket name into Terraform, after renaming `backend.tf.example` to `backend.tf` under the following directories:
 
-* [Pass a `backend-config` file to your terraform commands](https://www.terraform.io/docs/language/settings/backends/configuration.html#partial-configuration)
-* Add your your state storage bucket name into Terraform, after renaming `backend.tf.example` to `backend.tf` under the following directories:
-  * `terraform/base`
-  * `terraform/ingess`
+* `terraform/base`
+* `terraform/ingess`
 
 5. Not essential, but it is recommended that you also request a preemptible instance limit by "Editing" the right value in the GCP `Quotas` panel, for the region you will run your cluster in, for example:
 
 ![image](https://user-images.githubusercontent.com/8771937/142948710-63f92c5b-c280-4d43-adf8-c990489fc305.png)
 
-This may not be possible without upgrading to a paid billing account. I've observed that the regular CPU regional quotas for each instance CPU type like `N2_CPUS` or `N2D_CPUS` don't always reset correctly after GCP terminates preemptible instances, which are used by this infrastructure template. They occasionally cause "ghost" usages of the quota preventing your cluster from fully scaling up. From trial-and-error it seems that the special preemptible quotas reset more regularly than the regular quota.
+This may not be possible without upgrading to a paid billing account. I've observed that the regular CPU regional quotas for each instance CPU type like `N2_CPUS` or `N2D_CPUS` don't always reset correctly after GCP terminates preemptible instances, which are used by this infrastructure template. They occasionally cause "ghost" usages of the quota preventing your cluster from fully scaling up. From trial-and-error it seems that the special preemptible quotas reset more consistently than the regular quota.
 
 ### Configuration
 
@@ -66,7 +64,7 @@ This project uses two different providers:
 * `hashicorp/google` (and associated `hashicorp/google-beta`) for GCP resources
 * `hashicorp/kubernetes` for in-cluster configurations of the ingress Traefik Proxy and associated GCP resources
 
-Because until the `google` provider has created the actual GKE Kubernetes cluster, the `kubernetes` provider cannot be configured fully -- a dependency between the two providers -- it is somewhat necessary for the template to be split in two layers so that they could be bootstrapped cleanly.
+Because the `kubernetes` provider cannot be configured fully until the `google` provider has created the actual GKE cluster -- a dependency between the two providers -- it is somewhat necessary for the template to be split in two layers so that they could be bootstrapped cleanly.
 
 Therefore, you should execute the standard Terraform apply process below in the following order:
 
@@ -85,9 +83,9 @@ terraform apply
 
 ## Usage
 
-Traefik implements its Kubernetes TLS secret controller with Reflection, as a result it requires the ability to list all secrets in all namespaces it watches for new ingress resources in by default, and [stubbornly refuses](https://github.com/traefik/traefik/issues/7097) to provide a config option to turn off the code requiring secret access, even if the user does not want to load any TLS certificates.
+Traefik implements its Kubernetes TLS secret controller with Reflection, as a result it requires the ability to list all secrets in all namespaces it watches for new ingress resources in by default, and [stubbornly refuses](https://github.com/traefik/traefik/issues/7097) to provide a config option to turn off the code requiring secret access, even if the user does not want to load any TLS certificates (as is in our case using Let's Encrypt ACME instead).
 
-We therefore have had to set up a namespace dedicated to services that will be exposed via Traefik, and make that namespace is the only one in which Traefik is configured to be able to read all secrets. This namespace is called **`ingress`** and is configured by the `ingress` layer. 
+We therefore have had to set up a namespace dedicated to services that will be exposed via Traefik, and ensure that namespace is the only one in which Traefik is configured to be able to read all secrets. This namespace is called **`ingress`** and is configured by the `terraform/ingress` layer. 
 
 For backend services which don't need secrets to run, or whose secrets are not sensitive enough and we don't need to worry about them if Traefik is compromised, they could run in the `ingress` namespace itself. Any service with sufficiently sensitive secrets should run in a namespace in which Traefik has no access to secrets. But since Traefik will then refuse to forward traffic into these namespaces, we will need to setup a light-weight service proxy for each such backend service in the `ingress` namespace using NGINX.
 
@@ -116,7 +114,7 @@ A special template file under `terraform/ingress/instance_resources/middlewares.
 
 This file can also hold other [custom configurations](https://doc.traefik.io/traefik/reference/dynamic-configuration/file/) for Traefik. This file is loaded into the runtime when the ingress load-balancing instance is started.
 
-Once the template file has has been re-applied via Terraform and the ingress load-balancing instance restarted in the process, middlewares can be loaded for each Ingress object by passing a list of their names with `@file` suffixes into the `service_traefik_middlewares` variable, as shown in the example from the previous section.
+Once the template file has has been re-applied via Terraform and the ingress load-balancing instance restarted automatically in the process, middlewares can be loaded for each Ingress object by passing a list of their names with `@file` suffixes into the `service_traefik_middlewares` variable, as shown in the example from the previous section.
 
 ## Estimated cost of upkeep
 
@@ -137,7 +135,7 @@ The following typical daily costs were billed by Google Cloud Platform running m
 
 <sup>*</sup> _Cost items such as VM-initiated network egress, Google Container Registry and static IP charge which are individually too small to register on the BigQuery billing export data._
 
-The total usable computing resources covered by these costs is around 8 vCPUs and 16 GB of RAM a month, minus overhead by cluster components.
+The total usable computing resources covered by these costs is around 8 vCPUs and 16 GB of RAM a month, minus overhead consumed by cluster components.
 
 ## Disclaimer
 
