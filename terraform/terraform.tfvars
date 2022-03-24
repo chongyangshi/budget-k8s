@@ -6,10 +6,6 @@ project_id = "my-budget-k8s"
 project_region = "us-west1"
 cluster_zone   = "a"
 
-# CHANGEME: set this to a region suitable for storing your custom container images which the cluster will be able to access
-# Available locations in https://cloud.google.com/storage/docs/locations#available-locations
-container_registry_region = "US"
-
 # If you require ingress into other TCP or UDP ports from the internet, change the list below
 external_ingress_tcp_ports = ["80", "443"]
 external_ingress_udp_ports = []
@@ -21,7 +17,7 @@ external_ingress_udp_ports = []
 # Ports should be set as the targetPort for all ClusterIP Services, and nodePorts for all NodePort Services 
 # in the `ingress` namespace intended to be reachable from Traefik.
 ingress_namespace_tcp_ports = []
-ingress_namespace_udp_ports = []    
+ingress_namespace_udp_ports = []
 
 # CHANGEME: set this to your home or VPN network range for accessing your cluster control plane remotely
 external_control_plane_access_ranges = ["12.34.56.78/32"]

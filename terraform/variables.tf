@@ -81,12 +81,6 @@ variable "node_ephemeral_disk_size_gb" {
   default     = 50
 }
 
-variable "container_registry_region" {
-  type        = string
-  description = "Region of the Container Registry bucket storing your custom images, for example US or EU"
-  default     = "EU"
-}
-
 variable "ingress_ephemeral_disk_size_gb" {
   type        = number
   description = "Number of GiBs in size the ephemeral disks of the ingress load-balancing instance should run with"

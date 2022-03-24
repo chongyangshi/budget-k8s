@@ -8,7 +8,7 @@ This project is a template for creating a low-budget, managed Kubernetes environ
 * A **managed Kubernetes cluster** using Google Kuberenetes Engine (GKE), with best security practices (those not significantly elevating the personal project cost) pre-configured out-of-box, on zonal mode with no cluster management cost;
 * A self-contained Google Compute Engine (GCE) **virtual machine for ingress load-balancing** using [Traefik Proxy](https://doc.traefik.io/traefik/), to avoid the high standing cost of GCP Load Balancers;
 * Wrapper module for quickly creating ingress endpoints for each hostname of services you wish to expose on the internet;
-* A pre-configured Google Container Registry (GCR) for storing private container images accessible from the cluster;
+* A pre-configured Google Artifact Registry (GCR) for storing private container images accessible from the cluster;
 * Pre-configured managed KMS encryption for all persistent disks and Kubernetes Secrets.
 
 For more details on the various cost-saving measures made possible within the context of personal projects, see [this blog post](https://blog.scy.email/managed-kubernetes-on-a-hobbyist-budget.html) for more details.
@@ -26,6 +26,7 @@ This template uses Terraform v1.0+, which is now generally available at the time
 2. You will also need to have enabled the following APIs for the project, which might take a few minutes:
 
 ```bash
+gcloud services enable artifactregistry.googleapis.com
 gcloud services enable compute.googleapis.com
 gcloud services enable container.googleapis.com
 gcloud services enable cloudkms.googleapis.com
@@ -133,7 +134,7 @@ The following typical daily costs were billed by Google Cloud Platform running m
 | UK VAT (20%)                                    |                |  7.84                     |
 | **bill sum**                                    |                | **47.04**                 |
 
-<sup>*</sup> _Cost items such as VM-initiated network egress, Google Container Registry and static IP charge which are individually too small to register on the BigQuery billing export data._
+<sup>*</sup> _Cost items such as VM-initiated network egress, Google Artifact Registry and static IP charge which are individually too small to register on the BigQuery billing export data._
 
 The total usable computing resources covered by these costs is around 8 vCPUs and 16 GB of RAM a month, minus overhead consumed by cluster components.
 

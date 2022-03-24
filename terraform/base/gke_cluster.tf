@@ -100,7 +100,7 @@ resource "google_container_cluster" "cluster" {
   }
 
   workload_identity_config {
-    identity_namespace = "${var.project_id}.svc.id.goog"
+    workload_pool = "${var.project_id}.svc.id.goog"
   }
 
   // Not much use for a personal project -- only one user will hold
@@ -157,7 +157,7 @@ resource "google_container_node_pool" "preemptible_nodes_first_pool" {
       "https://www.googleapis.com/auth/logging.write",
       "https://www.googleapis.com/auth/monitoring",
     ]
-    service_account   = google_service_account.cluster.email
+    service_account = google_service_account.cluster.email
 
     // We do not use gVisor with sandbox_config, as it will turn off
     // hyper-threading (HT) and thus cutting our usable CPU resource 
@@ -222,7 +222,7 @@ resource "google_container_node_pool" "preemptible_nodes_second_pool" {
       "https://www.googleapis.com/auth/logging.write",
       "https://www.googleapis.com/auth/monitoring",
     ]
-    service_account   = google_service_account.cluster.email
+    service_account = google_service_account.cluster.email
 
     // We do not use gVisor with sandbox_config, as it will turn off
     // hyper-threading (HT) and thus cutting our usable CPU resource 

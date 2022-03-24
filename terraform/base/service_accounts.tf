@@ -31,14 +31,12 @@ resource "google_project_iam_member" "cluster_resource_metadata_viewer" {
   member  = "serviceAccount:${google_service_account.cluster.email}"
 }
 
-resource "google_project_iam_member" "cluster_storage_viewer" {
-  project = var.project_id
-  role    = "roles/storage.objectViewer"
-  member  = "serviceAccount:${google_service_account.cluster.email}"
-  
-  condition {
-    title       = "ReadAccessToGCR"
-    description = ""
-    expression  = "resource.name.startsWith(\"projects/_/buckets/${google_container_registry.cluster.id}\")"
-  }
+resource "google_artifact_registry_repository_iam_member" "cluster_artifact_registry_reader" {
+  provider = google-beta
+
+  project    = var.project_id
+  location   = google_artifact_registry_repository.cluster.location
+  repository = google_artifact_registry_repository.cluster.name
+  role       = "roles/artifactregistry.reader"
+  member     = "serviceAccount:${google_service_account.cluster.email}"
 }
