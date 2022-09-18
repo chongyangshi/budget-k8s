@@ -62,7 +62,7 @@ resource "google_compute_instance" "ingress" {
       type  = "pd-standard"
     }
 
-    kms_key_self_link = google_kms_crypto_key.ingress.self_link
+    kms_key_self_link = google_kms_crypto_key.ingress.id
   }
 
   network_interface {
