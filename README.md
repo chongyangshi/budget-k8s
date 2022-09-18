@@ -143,3 +143,5 @@ The total usable computing resources covered by these costs is around 8 vCPUs an
 This template is made available under the MIT License, full terms of which can be found in the `LICENSE` file within this repository. 
 
 Cost estimations are based on the author's best-effort understanding of the GCP pricing system at the time of writing. GCP may also choose to change any part of their pricing system at any time. The author is not liable for any discrepancies between the estimations and actual bills when using this template, however caused.
+
+Update late-2022: since originally publishing this repository, I have started working for [DeepMind](https://deepmind.com), which is part of Alphabet Inc. All technical information in this repository are based on publicly-available information. Nothing in this repository reflects the view or endorsement of DeepMind, Google, or Alphabet Inc.
