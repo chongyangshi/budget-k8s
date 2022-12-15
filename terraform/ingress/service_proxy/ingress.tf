@@ -27,7 +27,7 @@ locals {
   backend_service_name = local.requires_service_proxy ? local.service_proxy_name : var.service_name
 }
 
-resource "kubernetes_ingress" "service" {
+resource "kubernetes_ingress_v1" "service" {
   metadata {
     name      = var.ingress_name != "" ? var.ingress_name : var.service_name
     namespace = var.ingress_namespace
@@ -36,9 +36,13 @@ resource "kubernetes_ingress" "service" {
   }
 
   spec {
-    backend {
-      service_name = local.backend_service_name
-      service_port = var.service_port
+    default_backend {
+      service {
+        name = local.backend_service_name
+        port {
+          number = var.service_port
+        }
+      }
     }
 
     dynamic "rule" {
@@ -48,8 +52,12 @@ resource "kubernetes_ingress" "service" {
         http {
           path {
             backend {
-              service_name = local.backend_service_name
-              service_port = var.service_port
+              service {
+                name = local.backend_service_name
+                port {
+                  number = var.service_port
+                }
+              }
             }
 
             path = "/"
