@@ -107,6 +107,6 @@ variable "ingress_acme_account_email" {
 
 variable "ingress_traefik_version" {
   type        = string
-  description = "The version ID (e.g. v2.8.4) of Traefik ingress proxy to be installed in the ingress load-balancing instance"
-  default     = "v2.8.4"
+  description = "The version ID (e.g. v2.9.6) of Traefik ingress proxy to be installed in the ingress load-balancing instance"
+  default     = "v2.9.6"
 }
