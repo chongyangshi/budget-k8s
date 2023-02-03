@@ -36,6 +36,12 @@ resource "google_container_cluster" "cluster" {
       start_time = "03:00"
     }
   }
+  
+  monitoring_config {
+    managed_prometheus {
+      enabled = false
+    }
+  }
 
   // We do not use binary authorization due to its additional cost and 
   // relatively limited benefit in the personal context of usage.
@@ -117,6 +123,14 @@ resource "google_container_cluster" "cluster" {
   // node pool and immediately delete it.
   remove_default_node_pool = true
   initial_node_count       = 1
+
+  lifecycle {
+    ignore_changes = [
+      // For compatability with existing clusters, as this cannot be changed after
+      // cluster creation.
+      monitoring_config,
+    ]
+  }
 }
 
 // We run two preemptible node pools to provide a small amount of resistance to 
