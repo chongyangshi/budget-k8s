@@ -27,11 +27,22 @@ resource "kubernetes_service_account" "traefik" {
 // their statuses across the cluster, and only reading secrets in the 
 // namespace for ingress services only. Therefore it is reasonably safe
 // to end up in Terraform remote state.
-data "kubernetes_secret" "traefik_service_token" {
+// This used to be a data.kubernetes_secret object, which references the
+// default service account token of the service account above. But
+// starting in Kubernetes 1.24 default service account tokens are no
+// longer created in secrets for good reasons. We continue to require
+// it because Traefik in our setup runs outside of the cluster in GCE.
+resource "kubernetes_secret_v1" "traefik_service_token" {
   metadata {
-    name      = kubernetes_service_account.traefik.default_secret_name
+    annotations = {
+      "kubernetes.io/service-account.name" = kubernetes_service_account.traefik.metadata.0.name
+    }
+
+    name = "traefik-service-account-token"
     namespace = kubernetes_service_account.traefik.metadata.0.namespace
   }
+
+  type = "kubernetes.io/service-account-token"
 }
 
 resource "kubernetes_cluster_role" "traefik" {

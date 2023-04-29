@@ -7,7 +7,7 @@
 locals {
   traefik_config_file = base64encode(templatefile("${path.module}/instance_resources/traefik.yaml", {
     acme_account_email    = var.ingress_acme_account_email,
-    traefik_service_token = data.kubernetes_secret.traefik_service_token.data.token,
+    traefik_service_token = kubernetes_secret_v1.traefik_service_token.data.token,
   }))
 
   traefik_logrotate_file = filebase64("${path.module}/instance_resources/logrotate.conf")
