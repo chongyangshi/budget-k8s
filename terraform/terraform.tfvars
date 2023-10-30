@@ -6,6 +6,11 @@ project_id = "my-budget-k8s"
 project_region = "us-west1"
 cluster_zone   = "a"
 
+# We disable cluster container logs in Cloud Logging, as they can easily exceed the 50GB monthly
+# free tier and incur charges. You can still look up container logs using kubectl logs. But if
+# you would prefer to ingest these logs, change the following to true.
+cluster_container_logs_ingested = false
+
 # If you require ingress into other TCP or UDP ports from the internet, change the list below
 external_ingress_tcp_ports = ["80", "443"]
 external_ingress_udp_ports = []

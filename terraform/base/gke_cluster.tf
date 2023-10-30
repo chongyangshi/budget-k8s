@@ -36,7 +36,7 @@ resource "google_container_cluster" "cluster" {
       start_time = "03:00"
     }
   }
-  
+
   monitoring_config {
     managed_prometheus {
       enabled = false
@@ -263,6 +263,16 @@ resource "google_container_node_pool" "preemptible_nodes_second_pool" {
     max_surge       = 1
     max_unavailable = 1
   }
+}
+
+resource "google_logging_project_exclusion" "cluster_container_logs" {
+  count   = var.cluster_container_logs_ingested ? 0 : 1
+  name    = "cluster-container-logs-excluded"
+  project = data.google_project.project.number
+
+  description = "Do not ingest cluster container logs into Cloud Logging."
+
+  filter = "resource.type = k8s_container AND resource.labels.cluster_name=\"${google_container_cluster.cluster.name}\""
 }
 
 output "gke_cluster_endpoint" {

@@ -21,6 +21,12 @@ variable "cluster_zone" {
   default     = "a"
 }
 
+variable "cluster_container_logs_ingested" {
+  type        = bool
+  description = "Whether cluster container logs should be ingested to Cloud Logs."
+  default     = false
+}
+
 variable "external_ingress_tcp_ports" {
   type        = list(string)
   description = "List of TCP ports (in string literals) allowed to reach the ingress instances."
