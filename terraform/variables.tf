@@ -102,7 +102,7 @@ variable "ingress_instance_type" {
 variable "ingress_image_type" {
   type        = string
   description = "GCE image type for the permanent ingress load-balancing instance with a public IP"
-  default     = "debian-cloud/debian-10"
+  default     = "debian-cloud/debian-12"
 }
 
 variable "ingress_acme_account_email" {

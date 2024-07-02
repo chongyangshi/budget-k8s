@@ -55,7 +55,7 @@ resource "kubernetes_cluster_role_binding" "terminated_pods_janitor" {
   }
 }
 
-resource "kubernetes_cron_job" "terminated_pods_janitor" {
+resource "kubernetes_cron_job_v1" "terminated_pods_janitor" {
   metadata {
     name      = "terminated-pods-janitor"
     namespace = "kube-public"
