@@ -17,7 +17,7 @@ NoNewPrivileges=true
 ExecStart=/usr/local/bin/traefik --configfile=/etc/traefik/traefik.yaml
 Type=notify
 Restart=always
-WatchdogSec=1s
+WatchdogSec=10s
 
 LimitNOFILE=1048576
 PrivateTmp=true

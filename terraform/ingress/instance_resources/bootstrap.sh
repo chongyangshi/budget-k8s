@@ -4,6 +4,8 @@
 # https://gist.github.com/ubergesundheit/7c9d875befc2d7bfd0bf43d8b3862d85
 # https://github.com/traefik/traefik/blob/master/contrib/systemd/traefik.service
 
+echo "Bootstrapping budget-k8s ingress instance revision ${instance_revision}..."
+
 # Installs traefik binary
 curl https://github.com/traefik/traefik/releases/download/${traefik_version}/traefik_${traefik_version}_linux_amd64.tar.gz -L -o traefik_${traefik_version}_linux_amd64.tar.gz
 tar zxvf traefik_${traefik_version}_linux_amd64.tar.gz

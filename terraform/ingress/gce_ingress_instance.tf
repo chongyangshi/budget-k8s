@@ -74,8 +74,8 @@ resource "google_compute_instance" "ingress" {
     }
   }
 
-
   metadata_startup_script = templatefile("${path.module}/instance_resources/bootstrap.sh", {
+    instance_revision        = "2025_02"
     traefik_version          = var.ingress_traefik_version,
     traefik_config_file      = local.traefik_config_file,
     traefik_service_file     = local.traefik_service_file,
