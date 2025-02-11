@@ -187,6 +187,10 @@ resource "google_container_node_pool" "preemptible_nodes_first_pool" {
       enable_secure_boot          = true
       enable_integrity_monitoring = true
     }
+
+    linux_node_config {
+      cgroup_mode = "CGROUP_MODE_V2"
+    }
   }
 
   management {
@@ -251,6 +255,10 @@ resource "google_container_node_pool" "preemptible_nodes_second_pool" {
     shielded_instance_config {
       enable_secure_boot          = true
       enable_integrity_monitoring = true
+    }
+
+    linux_node_config {
+      cgroup_mode = "CGROUP_MODE_V2"
     }
   }
 
