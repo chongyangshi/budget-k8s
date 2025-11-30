@@ -10,8 +10,8 @@ resource "google_kms_crypto_key" "cluster" {
   name     = "cluster"
   key_ring = google_kms_key_ring.cluster.id
 
-  // Managed key is rotated every 90 days
-  rotation_period = "7776000s"
+  // Managed key is not rotated periodically unless kms_key_rotation_period_seconds is set to non-zero.
+  rotation_period = var.kms_key_rotation_period_seconds == 0 ? null : var.kms_key_rotation_period_seconds
 
   version_template {
     protection_level = "SOFTWARE"

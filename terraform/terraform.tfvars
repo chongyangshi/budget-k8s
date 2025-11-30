@@ -37,3 +37,9 @@ node_pools_second_instance_count = 1
 # CHANGEME: set this to an email you want to use for registering with Let's Encrypt, so that Traefik will be able
 # to request ACME TLS certificates on your behalf. Certificate expiration remainders will be sent here.
 ingress_acme_account_email = "you@example.com"
+
+# Set to a non-zero value (e.g. 7776000 for 90 days) for the period if you wish Cloud KMS to autorate managed keys.
+# Since past data are not automatically reencrypted at rotation, past key versions will need to be kept active and
+# incur an increasing (but small) charge over time. Therefore unless there is a strong security/compliance need
+# you probably want to keep this at default 0.
+kms_key_rotation_period_seconds = 0

@@ -116,3 +116,9 @@ variable "ingress_traefik_version" {
   description = "The version ID (e.g. v2.10.0) of Traefik ingress proxy to be installed in the ingress load-balancing instance"
   default     = "v2.10.0"
 }
+
+variable "kms_key_rotation_period_seconds" {
+  type        = number
+  description = "If set to a non-zero value, number of seconds (e.g. 7776000 for 90 days) for Cloud KMS to automatically rotate keys."
+  default     = 0
+}
